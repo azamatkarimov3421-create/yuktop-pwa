@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="truckGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B63F6" />
+      <stop offset="100%" stop-color="#0047C7" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF7A00" />
+      <stop offset="100%" stop-color="#FF5500" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0B63F6" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  
+  <!-- Rounded Background Container -->
+  <rect width="512" height="512" rx="112" fill="#FFFFFF"/>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="#F0F6FF" stroke="#E2E8F0" stroke-width="2"/>
+  
+  <!-- Speed Lines -->
+  <g stroke="url(#accentGrad)" stroke-width="14" stroke-linecap="round">
+    <line x1="80" y1="200" x2="150" y2="200" />
+    <line x1="55" y1="240" x2="135" y2="240" stroke-width="12" opacity="0.85"/>
+    <line x1="85" y1="280" x2="145" y2="280" stroke-width="10" opacity="0.7"/>
+    <line x1="60" y1="320" x2="120" y2="320" stroke-width="8" opacity="0.5"/>
+  </g>
+  
+  <!-- Main Truck Body (Cargo Container) -->
+  <rect x="160" y="170" width="170" height="150" rx="16" fill="url(#truckGrad)" filter="url(#shadow)"/>
+  <rect x="175" y="185" width="140" height="120" rx="10" fill="none" stroke="#FFFFFF" stroke-width="6" opacity="0.3"/>
+  <line x1="245" y1="185" x2="245" y2="305" stroke="#FFFFFF" stroke-width="5" opacity="0.3"/>
+  
+  <!-- Truck Cabin -->
+  <path d="M335 220 L385 220 Q405 220 415 235 L435 265 Q442 276 442 290 L442 320 L335 320 Z" fill="url(#truckGrad)"/>
+  
+  <!-- Cabin Windshield -->
+  <path d="M345 232 L385 232 Q396 232 402 242 L418 268 Q422 274 420 280 L345 280 Z" fill="#E0F2FE"/>
+  
+  <!-- Front Bumper / Grill Accent -->
+  <rect x="420" y="295" width="26" height="20" rx="4" fill="url(#accentGrad)"/>
+  
+  <!-- Truck Wheels -->
+  <circle cx="210" cy="330" r="38" fill="#1E293B"/>
+  <circle cx="210" cy="330" r="20" fill="#94A3B8"/>
+  <circle cx="210" cy="330" r="10" fill="#FFFFFF"/>
+  
+  <circle cx="385" cy="330" r="38" fill="#1E293B"/>
+  <circle cx="385" cy="330" r="20" fill="#94A3B8"/>
+  <circle cx="385" cy="330" r="10" fill="#FFFFFF"/>
+  
+  <!-- Text Underneath -->
+  <text x="256" y="420" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="900" font-size="44" fill="#0B63F6" text-anchor="middle" letter-spacing="2">
+    YUK<tspan fill="#FF7A00">TOP</tspan>
+  </text>
+  <text x="256" y="445" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="16" fill="#64748B" text-anchor="middle" letter-spacing="3">
+    CARGO • ROUTES • FREIGHT
+  </text>
+</svg>

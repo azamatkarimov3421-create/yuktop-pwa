@@ -1,0 +1,50 @@
+{
+  "name": "YUKTOP — Smart Freight Logistics",
+  "short_name": "YUKTOP",
+  "description": "Smart Freight Logistics for a Stronger Tomorrow. Book trucks, track shipments in real-time.",
+  "start_url": "/",
+  "id": "/?source=pwa",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B63F6",
+  "theme_color": "#0B63F6",
+  "lang": "uz",
+  "categories": ["logistics", "transportation", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/logo-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/logo-icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book a Truck",
+      "short_name": "Book",
+      "description": "Quickly book freight transport",
+      "url": "/?screen=booking",
+      "icons": [{ "src": "/icons/logo-icon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Track Shipment",
+      "short_name": "Track",
+      "description": "Live GPS shipment tracking",
+      "url": "/?screen=track",
+      "icons": [{ "src": "/icons/logo-icon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Bookings",
+      "short_name": "Bookings",
+      "description": "View active and completed trips",
+      "url": "/?screen=bookings",
+      "icons": [{ "src": "/icons/logo-icon.svg", "sizes": "96x96" }]
+    }
+  ]
+}
