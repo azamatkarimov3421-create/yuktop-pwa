@@ -9,13 +9,11 @@ import {
   Truck, 
   MapPin, 
   ChevronRight, 
-  Star, 
-  Inbox,
-  Clock,
-  Layers,
-  Phone,
+  Clock, 
+  Phone, 
   Send,
-  Users
+  Calendar,
+  Layers
 } from 'lucide-react';
 
 interface ShipperHomeScreenProps {
@@ -35,98 +33,75 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
   onSelectCargo,
   onSelectOrder
 }) => {
-  const pendingBidsCount = cargos.reduce((acc, c) => acc + (c.bidsCount || 0), 0);
+  const carrierTrips = storageService.getCarrierTrips();
 
   return (
-    <div className="space-y-3.5 pb-28 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full">
-      {/* Modern Hero Banner */}
-      <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-teal-800/85 via-teal-900/90 to-sky-900/85 backdrop-blur-2xl text-white p-4 xs:p-5 shadow-xl shadow-teal-950/15 border border-white/20 w-full">
-        <div className="absolute top-0 right-0 -mt-6 -mr-6 w-36 h-36 bg-teal-400/20 rounded-full blur-2xl pointer-events-none" />
-        <div className="relative z-10 space-y-3.5">
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <span className="text-[10px] font-semibold tracking-wider text-teal-200/90 uppercase">
-                Yuk Beruvchi Boshqaruvi
-              </span>
-              <h1 className="text-lg xs:text-xl font-extrabold tracking-tight mt-0.5">
-                Salom, {profile.fullName.split(' ')[0]}!
-              </h1>
-            </div>
-            <div className="flex items-center gap-1 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 text-[11px] font-bold shrink-0">
-              <Star className="w-3 h-3 fill-amber-300 text-amber-300" />
-              <span>{profile.rating}</span>
-            </div>
+    <div className="space-y-4 pb-28 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full">
+      {/* 1. Primary Action: Post New Cargo */}
+      <div className="rounded-3xl bg-gradient-to-br from-teal-800 via-teal-900 to-sky-950 text-white p-4 xs:p-5 shadow-lg border border-teal-700/50">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-300">
+              Yuk beruvchi paneli
+            </span>
+            <h1 className="text-xl font-black tracking-tight mt-0.5">
+              Assalomu alaykum, {profile.fullName.split(' ')[0]}!
+            </h1>
           </div>
-
-          {/* Quick Metrics */}
-          <div className="grid grid-cols-3 gap-1.5 xs:gap-2.5 pt-0.5">
-            <div className="bg-white/10 backdrop-blur-xl p-2.5 xs:p-3 rounded-2xl border border-white/15 text-center shadow-inner">
-              <div className="text-[9px] xs:text-[10px] text-teal-200 font-medium">E'lonlar</div>
-              <div className="text-sm xs:text-base font-black mt-0.5">{cargos.length} ta</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-xl p-2.5 xs:p-3 rounded-2xl border border-white/15 text-center shadow-inner">
-              <div className="text-[9px] xs:text-[10px] text-teal-200 font-medium">Yo'lda</div>
-              <div className="text-sm xs:text-base font-black mt-0.5">{activeOrders.length} ta</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-xl p-2.5 xs:p-3 rounded-2xl border border-white/15 text-center shadow-inner">
-              <div className="text-[9px] xs:text-[10px] text-teal-200 font-medium">Takliflar</div>
-              <div className="text-sm xs:text-base font-black mt-0.5 text-amber-300">{pendingBidsCount} ta</div>
-            </div>
+          <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-teal-200 border border-white/20">
+            <Package className="w-5 h-5" />
           </div>
-
-          {/* CTA Button */}
-          <button
-            type="button"
-            onClick={onOpenPostCargo}
-            className="w-full py-3 xs:py-3.5 px-4 rounded-full bg-white/95 text-teal-900 font-extrabold text-xs shadow-md active:scale-98 transition-all flex items-center justify-center gap-2 hover:bg-white border border-white/80"
-          >
-            <Plus className="w-4 h-4 text-teal-700 stroke-[3]" />
-            <span>Yangi yuk e'lon qilish (A va B marshrut)</span>
-          </button>
         </div>
+
+        <button
+          type="button"
+          onClick={onOpenPostCargo}
+          className="w-full py-3.5 px-4 rounded-2xl bg-teal-500 hover:bg-teal-400 text-white font-black text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
+        >
+          <Plus className="w-5 h-5 stroke-[3]" />
+          <span>+ Yangi yuk e'lon qilish</span>
+        </button>
       </div>
 
-      {/* Active In-Transit Orders */}
+      {/* 2. Yo'ldagi Faol Buyurtmalar (agar mavjud bo'lsa) */}
       {activeOrders.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Truck className="w-3.5 h-3.5 text-teal-600" />
-              Yo'ldagi yuklar ({activeOrders.length})
-            </h2>
-          </div>
+        <div className="space-y-2.5">
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5 px-1">
+            <Truck className="w-4 h-4 text-teal-600" />
+            Yo'ldagi yuklaringiz ({activeOrders.length})
+          </h2>
 
           <div className="space-y-2">
             {activeOrders.map(order => (
               <div
                 key={order.id}
                 onClick={() => onSelectOrder(order)}
-                className="p-3.5 xs:p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-teal-400 cursor-pointer space-y-2"
+                className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs hover:border-teal-400 cursor-pointer transition-all space-y-2.5"
               >
-                <div className="flex items-center justify-between gap-1">
+                <div className="flex items-center justify-between">
                   <StatusBadge status={order.status} size="sm" />
-                  <span className="text-[9px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                  <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                     {order.orderCode}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-xs xs:text-sm font-bold text-slate-900 truncate">
+                  <h3 className="text-sm font-bold text-slate-900 truncate">
                     {order.cargoTitle}
                   </h3>
-                  <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5 font-medium truncate">
-                    <span>{order.pickupLocation.city.split(' ')[0]}</span>
-                    <span className="text-slate-300">→</span>
-                    <span>{order.deliveryLocation.city.split(' ')[0]}</span>
+                  <div className="text-xs text-slate-600 flex items-center gap-1.5 mt-1 font-semibold">
+                    <span>{order.pickupLocation.city}</span>
+                    <span className="text-teal-600 font-bold">➔</span>
+                    <span>{order.deliveryLocation.city}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                  <div className="text-slate-500 text-[10px] xs:text-[11px] truncate max-w-[170px]">
+                  <span className="text-slate-500">
                     Haydovchi: <strong className="text-slate-800">{order.driverName}</strong>
-                  </div>
-                  <span className="text-teal-700 font-bold flex items-center gap-0.5 text-[10px] xs:text-[11px] bg-teal-50 border border-teal-200 px-2.5 py-0.5 rounded-full shrink-0">
-                    Kuzatish <ChevronRight className="w-3 h-3" />
+                  </span>
+                  <span className="text-teal-700 font-bold flex items-center gap-0.5 text-xs bg-teal-50 border border-teal-200 px-3 py-1 rounded-full">
+                    Kuzatish <ChevronRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
               </div>
@@ -135,95 +110,92 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
         </div>
       )}
 
-      {/* Posted Cargos List */}
+      {/* 3. E'lon Qilingan Yuklarim */}
       <div className="space-y-2.5">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Package className="w-3.5 h-3.5 text-teal-600" />
-            E'lon qilingan yuklarim ({cargos.length})
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <Package className="w-4 h-4 text-teal-600" />
+            Mening e'lonlarim ({cargos.length})
           </h2>
+          {cargos.length > 0 && (
+            <span className="text-[11px] font-bold text-teal-700">
+              Jami takliflar: {cargos.reduce((a, c) => a + (c.bidsCount || 0), 0)} ta
+            </span>
+          )}
         </div>
 
         {cargos.length === 0 ? (
-          <div className="p-7 text-center bg-white/70 backdrop-blur-xl rounded-[26px] border border-dashed border-slate-300/80 space-y-2.5 shadow-2xs">
-            <div className="w-11 h-11 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center mx-auto">
-              <Inbox className="w-5 h-5 stroke-[1.5]" />
+          <div className="p-8 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
+            <div className="w-12 h-12 mx-auto rounded-full bg-teal-50 text-teal-600 flex items-center justify-center">
+              <Package className="w-6 h-6" />
             </div>
-            <div>
-              <h3 className="text-xs xs:text-sm font-bold text-slate-800">Yuk e'lonlari yo'q</h3>
-              <p className="text-[11px] text-slate-400 max-w-xs mx-auto mt-0.5">
-                Birinchi yukingizni e'lon qiling va O'zbekiston bo'ylab takliflarni oling.
-              </p>
-            </div>
+            <p className="text-sm font-bold text-slate-700">
+              Hozircha faol yuk e'loningiz yo'q
+            </p>
+            <p className="text-xs text-slate-400 max-w-xs mx-auto">
+              Yukingizni tez va qulay narxda yetkazish uchun hoziroq e'lon bering.
+            </p>
             <button
               type="button"
               onClick={onOpenPostCargo}
-              className="py-2.5 px-5 rounded-full bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs active:scale-95 transition-all"
+              className="px-4 py-2 bg-teal-700 text-white font-bold text-xs rounded-xl shadow-sm"
             >
-              + E'lon berish
+              + Yuk e'lon qilish
             </button>
           </div>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {cargos.map(cargo => (
               <div
                 key={cargo.id}
                 onClick={() => onSelectCargo(cargo)}
-                className="p-3.5 xs:p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-teal-400 cursor-pointer space-y-2.5"
+                className="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-teal-400 cursor-pointer transition-all space-y-2.5"
               >
-                <div className="flex items-start gap-2.5 xs:gap-3">
-                  <img
-                    src={cargo.imageUrl}
-                    alt={cargo.title}
-                    className="w-16 h-16 xs:w-20 xs:h-20 rounded-2xl object-cover border border-white/80 shrink-0 shadow-2xs"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-[8px] xs:text-[9px] font-bold uppercase tracking-wider text-teal-700 bg-teal-500/15 px-2 py-0.5 rounded-full border border-teal-200/60 truncate">
-                        {cargo.category}
-                      </span>
-                      <StatusBadge status={cargo.status} size="sm" />
-                    </div>
-
-                    <h3 className="text-xs xs:text-sm font-bold text-slate-900 mt-1 truncate">
-                      {cargo.title}
-                    </h3>
-
-                    <div className="text-[10px] xs:text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
-                      <span className="font-semibold text-slate-700">
-                        {(cargo.weightKg / 1000).toFixed(1)}t
-                      </span>
-                      <span className="text-slate-300">•</span>
-                      <span>{cargo.volumeM3} m³</span>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1.5 gap-1">
-                      <span className="text-xs xs:text-sm font-black text-teal-700 truncate">
-                        {formatMoneyUz(cargo.priceUzs)}
-                      </span>
-                      {cargo.bidsCount > 0 ? (
-                        <span className="text-[9px] xs:text-[10px] font-bold text-amber-800 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-300/60 shrink-0">
-                          🔥 {cargo.bidsCount} taklif
-                        </span>
-                      ) : (
-                        <span className="text-[9px] xs:text-[10px] text-slate-400 font-medium shrink-0">
-                          Kutilmoqda
-                        </span>
-                      )}
-                    </div>
+                {/* Route Header */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 text-sm font-black text-slate-900 truncate">
+                    <MapPin className="w-4 h-4 text-teal-600 shrink-0" />
+                    <span>{cargo.pickupLocation.city}</span>
+                    <span className="text-teal-600 font-extrabold">➔</span>
+                    <span>{cargo.deliveryLocation.city}</span>
                   </div>
+
+                  <span className="text-xs font-black text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-200 shrink-0">
+                    {formatMoneyUz(cargo.priceUzs)}
+                  </span>
                 </div>
 
-                {/* Route Bar */}
-                <div className="pt-2 border-t border-slate-100/80 flex items-center justify-between text-xs text-slate-500">
-                  <div className="flex items-center gap-1 truncate text-[10px] xs:text-[11px]">
-                    <MapPin className="w-3 h-3 text-teal-600 shrink-0" />
-                    <span className="truncate font-semibold">{cargo.pickupLocation.city.split(' ')[0]} → {cargo.deliveryLocation.city.split(' ')[0]}</span>
-                    <span className="text-slate-400 text-[9px]">({cargo.distanceKm} km)</span>
-                  </div>
-                  <span className="text-teal-700 font-bold text-[10px] xs:text-[11px] shrink-0 flex items-center gap-0.5">
-                    Ko'rish <ChevronRight className="w-3 h-3" />
+                {/* Cargo Details */}
+                <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold flex-wrap">
+                  <span className="bg-slate-100 px-2 py-0.5 rounded-md text-slate-700">
+                    {cargo.category}
                   </span>
+                  <span>•</span>
+                  <span>{(cargo.weightKg / 1000).toFixed(1)} tonna</span>
+                  <span>•</span>
+                  <span>{cargo.volumeM3} m³</span>
+                  <span>•</span>
+                  <span className={cargo.loadType === 'yigma_yuk' ? 'text-amber-700 font-bold' : 'text-sky-700 font-bold'}>
+                    {cargo.loadType === 'yigma_yuk' ? "📦 Yig'ma yuk (LTL)" : "🚚 Butun fura"}
+                  </span>
+                </div>
+
+                {/* Time & Bids Status */}
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-400 flex items-center gap-1 text-[11px]">
+                    <Clock className="w-3.5 h-3.5 text-slate-400" />
+                    {cargo.pickupDate} {cargo.pickupTimeWindow ? `(${cargo.pickupTimeWindow})` : ''}
+                  </span>
+
+                  {cargo.bidsCount > 0 ? (
+                    <span className="text-[11px] font-black text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300 animate-pulse">
+                      🔥 {cargo.bidsCount} ta taklif tushdi
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-slate-400 font-medium">
+                      Haydovchilar ko'rmoqda
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -231,70 +203,75 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
         )}
       </div>
 
-      {/* Available Empty Carrier Trips (Poputniy / Yig'ma yuk oluvchilar) */}
-      <div className="space-y-2.5 pt-1">
+      {/* 4. Bo'sh Qaytayotgan Mashinalar (Poputniy / Yig'ma yuk oluvchilar) */}
+      <div className="space-y-2.5 pt-2">
         <div className="flex items-center justify-between px-1">
-          <h2 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Truck className="w-3.5 h-3.5 text-teal-600" />
-            Bo'sh qaytayotgan mashinalar (Poputniy reyslar)
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <Truck className="w-4 h-4 text-teal-600" />
+            Bo'sh mashinalar (Poputniy reyslar)
           </h2>
-          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-            5 kishigacha yig'ma yuk
+          <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            Arzon narxda yuk berish
           </span>
         </div>
 
-        <div className="space-y-2.5">
-          {storageService.getCarrierTrips().map(trip => (
+        <div className="space-y-3">
+          {carrierTrips.map(trip => (
             <div
               key={trip.id}
-              className="p-3.5 xs:p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs space-y-2.5"
+              className="p-4 bg-white rounded-2xl border border-slate-200 shadow-xs space-y-3"
             >
-              <div className="flex items-center justify-between gap-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-800 font-extrabold flex items-center justify-center text-xs border border-teal-200">
-                    <Truck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-900">{trip.driverName}</h3>
-                    <div className="text-[10px] text-slate-400">{trip.vehicleModel}</div>
-                  </div>
+              {/* Driver & Space */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">{trip.driverName}</h3>
+                  <div className="text-xs text-slate-400 font-medium">{trip.vehicleModel} ({trip.vehiclePlate})</div>
                 </div>
 
-                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800 border border-emerald-300/60">
-                  {trip.availableCapacityTon}t bo'sh joy
+                <div className="text-right">
+                  <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    {trip.availableCapacityTon} t bo'sh joy
+                  </span>
+                  <div className="text-[10px] text-slate-400 mt-0.5">5 kishigacha yig'ma</div>
+                </div>
+              </div>
+
+              {/* Route & Price */}
+              <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1.5 text-slate-800 font-bold">
+                  <MapPin className="w-3.5 h-3.5 text-teal-600" />
+                  <span>{trip.departureLocation.city}</span>
+                  <span className="text-teal-600 font-extrabold">➔</span>
+                  <span>{trip.destinationLocation.city}</span>
+                </div>
+                <span className="font-black text-teal-700 text-sm">
+                  {formatMoneyUz(trip.pricePerTonUzs || 350000)} / t
                 </span>
               </div>
 
-              {/* Route & Time */}
-              <div className="p-2 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-[11px]">
-                <div className="flex items-center gap-1 text-slate-800 font-bold">
-                  <MapPin className="w-3 h-3 text-teal-600" />
-                  <span>{trip.departureLocation.city} ➔ {trip.destinationLocation.city}</span>
-                </div>
-                <span className="font-extrabold text-teal-700">{formatMoneyUz(trip.pricePerTonUzs || 350000)}/t</span>
-              </div>
-
-              <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5">
-                <span className="flex items-center gap-1 font-medium">
-                  <Clock className="w-3 h-3 text-teal-600" />
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
                   {trip.departureDate} ({trip.departureTimeWindow})
                 </span>
+
                 <div className="flex items-center gap-2">
                   {trip.driverTelegram && (
                     <a
                       href={`https://t.me/${trip.driverTelegram}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sky-600 font-bold hover:underline flex items-center gap-0.5"
+                      className="px-3 py-1.5 rounded-xl bg-sky-50 text-sky-700 border border-sky-200 font-bold text-xs flex items-center gap-1 hover:bg-sky-100"
                     >
-                      <Send className="w-2.5 h-2.5" /> Telegram
+                      <Send className="w-3 h-3" /> Telegram
                     </a>
                   )}
                   <a
                     href={`tel:${trip.driverPhone}`}
-                    className="px-2.5 py-1 rounded-full bg-teal-700 text-white font-bold text-[10px] flex items-center gap-1 shadow-2xs"
+                    className="px-3.5 py-1.5 rounded-xl bg-teal-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs hover:bg-teal-800"
                   >
-                    <Phone className="w-2.5 h-2.5" /> Qo'ng'iroq
+                    <Phone className="w-3 h-3" /> Qo'ng'iroq
                   </a>
                 </div>
               </div>

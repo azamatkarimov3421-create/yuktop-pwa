@@ -30,7 +30,6 @@ interface OrderTrackingScreenProps {
   onOpenChat: (orderId: string) => void;
   onOpenReviewModal: (order: Order) => void;
   onBack: () => void;
-  onOpenWaybill?: (order: Order) => void;
 }
 
 export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
@@ -39,8 +38,7 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
   onUpdateStatus,
   onOpenChat,
   onOpenReviewModal,
-  onBack,
-  onOpenWaybill
+  onBack
 }) => {
   const isCarrier = activeRole === 'yuk_tashuvchi';
 
@@ -136,31 +134,6 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
         order={order}
         isCarrierView={isCarrier}
       />
-
-      {/* Quick TTN Button */}
-      {onOpenWaybill && (
-        <button
-          type="button"
-          onClick={() => onOpenWaybill(order)}
-          className="w-full p-3.5 rounded-2xl bg-teal-50/80 border border-teal-200/90 flex items-center justify-between text-left shadow-2xs"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-teal-700 text-white flex items-center justify-center font-bold shadow-2xs">
-              <FileText className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-xs font-black text-teal-950 flex items-center gap-1.5">
-                <span>Elektron Yuk Xati (TTN / Nakladnoy)</span>
-                <span className="text-[9px] bg-teal-200 text-teal-900 px-1.5 py-0.2 rounded font-bold">Tekshirish</span>
-              </div>
-              <div className="text-[10px] text-teal-700/80">
-                Rasmiy QR-kodli yuk hujjati va marshrut ma'lumotlari
-              </div>
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-teal-700" />
-        </button>
-      )}
 
       {/* Order Info Card */}
       <div className="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs space-y-3">
@@ -286,15 +259,6 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
                     >
                       Bozorga qaytish (Yangi yuklar)
                     </button>
-                    {onOpenWaybill && (
-                      <button
-                        type="button"
-                        onClick={() => onOpenWaybill(order)}
-                        className="py-3 px-4 rounded-full bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-all shadow-2xs"
-                      >
-                        TTN Hujjati
-                      </button>
-                    )}
                   </div>
                 </div>
               )}

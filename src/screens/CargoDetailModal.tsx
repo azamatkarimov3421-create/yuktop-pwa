@@ -39,8 +39,6 @@ interface CargoDetailModalProps {
   onRejectBid?: (bidId: string) => void;
   onSubmitCarrierBid?: (cargoId: string, price: number, note?: string) => void;
   onOpenChatWithDriver?: (driverId: string) => void;
-  onOpenWaybill?: (cargo: CargoItem) => void;
-  onOpenCalculator?: (distanceKm: number, priceUzs: number) => void;
 }
 
 export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
@@ -54,9 +52,7 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
   onCounterBid,
   onRejectBid,
   onSubmitCarrierBid,
-  onOpenChatWithDriver,
-  onOpenWaybill,
-  onOpenCalculator
+  onOpenChatWithDriver
 }) => {
   if (!isOpen || !cargo) return null;
 
@@ -183,31 +179,6 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Quick Modern Action: Elektron Yuk Xati (TTN) preview */}
-          {onOpenWaybill && (
-            <button
-              type="button"
-              onClick={() => onOpenWaybill(cargo)}
-              className="w-full p-3 rounded-2xl bg-gradient-to-r from-teal-500/15 to-sky-500/15 backdrop-blur-xl border border-white/85 flex items-center justify-between active:scale-99 transition-all text-left shadow-2xs"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold shadow-2xs">
-                  <FileText className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-teal-950 flex items-center gap-1.5">
-                    <span>Elektron Yuk Xati (TTN / Nakladnoy)</span>
-                    <span className="text-[9px] bg-teal-200/70 text-teal-900 px-1.5 py-0.2 rounded font-bold">Raqamli QR</span>
-                  </div>
-                  <div className="text-[10px] text-teal-700/80">
-                    Yo'l patrul va transport inspektsiyasi uchun rasmiy hujjat
-                  </div>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-teal-700" />
-            </button>
-          )}
 
           {/* Map Preview */}
           <div className="space-y-1.5">
@@ -447,18 +418,6 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
                       Belgilangan narxni qabul qiling yoki o'z taklifingizni yuboring
                     </p>
                   </div>
-
-                  {/* Calculator Trigger */}
-                  {onOpenCalculator && (
-                    <button
-                      type="button"
-                      onClick={() => onOpenCalculator(cargo.distanceKm, parseFloat(carrierOfferPrice) || cargo.priceUzs)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-teal-800 border border-teal-300 shadow-2xs font-bold text-[10px] active:scale-95 transition-all"
-                    >
-                      <Calculator className="w-3.5 h-3.5 text-teal-600" />
-                      <span>Sof foyda hisoblash</span>
-                    </button>
-                  )}
                 </div>
 
                 {bidSubmitted ? (

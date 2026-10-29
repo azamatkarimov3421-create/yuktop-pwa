@@ -3,11 +3,9 @@ import {
   UserRole, 
   CargoItem, 
   Order, 
-  Bid, 
   NotificationItem, 
   UserProfile, 
-  OrderStatus,
-  LocationPoint 
+  OrderStatus
 } from './types';
 import { storageService } from './services/storageService';
 
@@ -28,10 +26,6 @@ import { OrderTrackingScreen } from './screens/OrderTrackingScreen';
 import { ChatScreen } from './screens/ChatScreen';
 import { CarrierVehicleModal } from './screens/CarrierVehicleModal';
 import { NotificationsModal } from './screens/NotificationsModal';
-import { AppwriteSettingsModal } from './screens/AppwriteSettingsModal';
-import { ReviewModal } from './screens/ReviewModal';
-import { WaybillModal } from './components/WaybillModal';
-import { ProfitCalculatorModal } from './components/ProfitCalculatorModal';
 import { App as CapApp } from '@capacitor/app';
 import { locationService } from './services/locationService';
 
@@ -55,15 +49,6 @@ export default function App() {
   const [activeChatOrderId, setActiveChatOrderId] = useState<string | null>(null);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
-  const [showAppwriteModal, setShowAppwriteModal] = useState(false);
-  const [reviewOrder, setReviewOrder] = useState<Order | null>(null);
-
-  // Waybill and Profit Calculator
-  const [waybillCargo, setWaybillCargo] = useState<CargoItem | null>(null);
-  const [waybillOrder, setWaybillOrder] = useState<Order | null>(null);
-  const [showProfitCalculator, setShowProfitCalculator] = useState(false);
-  const [calcDistanceKm, setCalcDistanceKm] = useState(300);
-  const [calcPriceUzs, setCalcPriceUzs] = useState(4000000);
   const [showExitToast, setShowExitToast] = useState(false);
 
   // Ilova ochilganda foydalanuvchidan GPS ruxsatini darhol so'rash
@@ -77,71 +62,50 @@ export default function App() {
     let backPressTimer: any = null;
 
     const backListener = CapApp.addListener('backButton', () => {
-      // 1-daraja: Agar kalkulyator ochiq bo'lsa
-      if (showProfitCalculator) {
-        setShowProfitCalculator(false);
-        return;
-      }
-      // 2-daraja: Agar TTN / Nakladnoy ochiq bo'lsa
-      if (waybillCargo || waybillOrder) {
-        setWaybillCargo(null);
-        setWaybillOrder(null);
-        return;
-      }
-      // 3-daraja: Agar sharh/baho oynasi ochiq bo'lsa
-      if (reviewOrder) {
-        setReviewOrder(null);
-        return;
-      }
-      // 4-daraja: Agar Appwrite sozlamalari ochiq bo'lsa
-      if (showAppwriteModal) {
-        setShowAppwriteModal(false);
-        return;
-      }
-      // 5-daraja: Agar bildirishnomalar ochiq bo'lsa
+      // 1-daraja: Agar bildirishnomalar ochiq bo'lsa
       if (showNotificationsModal) {
         setShowNotificationsModal(false);
         return;
       }
-      // 6-daraja: Agar haydovchi transport sozlamalari ochiq bo'lsa
+      // 2-daraja: Agar transport sozlamalari ochiq bo'lsa
       if (showVehicleModal) {
         setShowVehicleModal(false);
         return;
       }
-      // 6.5-daraja: Agar bo'sh reys (poputniy) modal oynasi ochiq bo'lsa
+      // 3-daraja: Agar bo'sh reys modal oynasi ochiq bo'lsa
       if (showPostTripModal) {
         setShowPostTripModal(false);
         return;
       }
-      // 7-daraja: Agar yuk e'lon qilish modal oynasi ochiq bo'lsa
+      // 4-daraja: Agar yuk e'lon qilish modal oynasi ochiq bo'lsa
       if (showPostCargoModal) {
         setShowPostCargoModal(false);
         return;
       }
-      // 8-daraja: Agar yuk batafsil ko'rish oynasi ochiq bo'lsa
+      // 5-daraja: Agar yuk batafsil ko'rish oynasi ochiq bo'lsa
       if (selectedCargoForDetail) {
         setSelectedCargoForDetail(null);
         return;
       }
-      // 9-daraja: Agar faol chat ochiq bo'lsa
+      // 6-daraja: Agar faol chat ochiq bo'lsa
       if (activeChatOrderId) {
         setActiveChatOrderId(null);
         return;
       }
-      // 10-daraja: Agar faol buyurtma kuzatuv ekrani ochiq bo'lsa
+      // 7-daraja: Agar faol buyurtma kuzatuv ekrani ochiq bo'lsa
       if (activeOrderForTracking) {
         setActiveOrderForTracking(null);
         return;
       }
 
-      // 11-daraja: Agar modal ochiq bo'lmasa, lekin boshqa tabda bo'lsa (Masalan: Buyurtmalar, Xarita, Profil)
+      // 8-daraja: Agar boshqa tabda bo'lsa, asosiy tabga qaytish
       const rootTab: MainTab = activeRole === 'yuk_beruvchi' ? 'home' : 'marketplace';
       if (currentTab !== rootTab) {
         setCurrentTab(rootTab);
         return;
       }
 
-      // 12-daraja: Agar bosh sahifada bo'lsa, ilovadan chiqish uchun 2 marta bosish
+      // 9-daraja: Chiqish uchun 2 marta bosish
       backPressCount++;
       if (backPressCount === 1) {
         setShowExitToast(true);
@@ -161,27 +125,16 @@ export default function App() {
       if (backPressTimer) clearTimeout(backPressTimer);
     };
   }, [
-    showProfitCalculator,
-    waybillCargo,
-    waybillOrder,
-    reviewOrder,
-    showAppwriteModal,
     showNotificationsModal,
     showVehicleModal,
-    showPostCargoModal,
     showPostTripModal,
+    showPostCargoModal,
     selectedCargoForDetail,
     activeChatOrderId,
     activeOrderForTracking,
     currentTab,
     activeRole
   ]);
-
-  const handleOpenCalculator = (distanceKm: number, priceUzs: number) => {
-    setCalcDistanceKm(distanceKm);
-    setCalcPriceUzs(priceUzs);
-    setShowProfitCalculator(true);
-  };
 
   // Sync state from storage service
   const refreshState = () => {
@@ -213,7 +166,7 @@ export default function App() {
 
   // Shipper adds new cargo
   const handlePostCargo = (cargoData: any) => {
-    const newCargo = storageService.addCargo({
+    storageService.addCargo({
       ...cargoData,
       ownerId: profile.id,
       ownerName: profile.fullName,
@@ -270,16 +223,14 @@ export default function App() {
     : null;
 
   return (
-    <div className="min-h-screen w-full bg-transparent text-slate-800 flex flex-col antialiased relative">
+    <div className="min-h-screen w-full bg-slate-50 text-slate-800 flex flex-col antialiased relative">
       {/* Top Header */}
       <Navbar
         activeRole={activeRole}
         onRoleToggle={handleRoleToggle}
         unreadNotificationsCount={storageService.getUnreadNotificationCount()}
         onOpenNotifications={() => setShowNotificationsModal(true)}
-        onOpenAppwriteSettings={() => setShowAppwriteModal(true)}
         onOpenProfile={() => setCurrentTab('profile')}
-        userRating={profile.rating}
       />
 
       {/* Main Content Area */}
@@ -299,8 +250,7 @@ export default function App() {
             activeRole={activeRole}
             onUpdateStatus={handleUpdateOrderStatus}
             onOpenChat={handleOpenChat}
-            onOpenReviewModal={(ord) => setReviewOrder(ord)}
-            onOpenWaybill={(ord) => setWaybillOrder(ord)}
+            onOpenReviewModal={() => {}}
             onBack={() => setActiveOrderForTracking(null)}
           />
         ) : (
@@ -324,14 +274,11 @@ export default function App() {
             {currentTab === 'marketplace' && activeRole === 'yuk_tashuvchi' && (
               <CarrierMarketplaceScreen
                 vehicle={profile.vehicle}
-                activeOrders={activeOrders}
-                onSelectOrder={(order) => setActiveOrderForTracking(order)}
                 onSelectCargo={(cargo, dist) => {
                   setSelectedCargoForDetail(cargo);
                   setDetailPickupDistanceKm(dist);
                 }}
                 onOpenVehicleSettings={() => setShowVehicleModal(true)}
-                onOpenCalculator={handleOpenCalculator}
                 onOpenPostTrip={() => setShowPostTripModal(true)}
               />
             )}
@@ -362,37 +309,32 @@ export default function App() {
                 activeRole={activeRole}
                 onRoleToggle={handleRoleToggle}
                 onOpenVehicleModal={() => setShowVehicleModal(true)}
-                onOpenAppwriteSettings={() => setShowAppwriteModal(true)}
-                onOpenCalculator={() => handleOpenCalculator(350, 4200000)}
               />
             )}
           </>
         )}
       </main>
 
-      {/* Bottom Ergonomic Navigation Bar */}
+      {/* Bottom Navigation Bar */}
       {!activeChatOrder && !activeOrderForTracking && (
         <BottomNavigation
           activeRole={activeRole}
           currentTab={currentTab}
           onTabChange={(tab) => setCurrentTab(tab)}
-          onOpenPostCargo={() => setShowPostCargoModal(true)}
-          onOpenVehicleModal={() => setShowVehicleModal(true)}
-          onOpenPostTrip={() => setShowPostTripModal(true)}
           activeOrdersCount={activeOrders.length}
         />
       )}
 
       {/* MODALS */}
 
-      {/* 1. Post Cargo Modal */}
+      {/* 1. Post Cargo Modal (Yuk beruvchi) */}
       <PostCargoModal
         isOpen={showPostCargoModal}
         onClose={() => setShowPostCargoModal(false)}
         onSubmit={handlePostCargo}
       />
 
-      {/* 1.5. Post Carrier Trip Modal (Yuk tashuvchi bo'sh mashina / poputniy reys) */}
+      {/* 2. Post Carrier Trip Modal (Yuk tashuvchi bo'sh mashina / poputniy reys) */}
       <PostTripModal
         isOpen={showPostTripModal}
         onClose={() => setShowPostTripModal(false)}
@@ -412,7 +354,7 @@ export default function App() {
         }}
       />
 
-      {/* 2. Cargo Detail & Bidding Modal */}
+      {/* 3. Cargo Detail & Bidding Modal */}
       <CargoDetailModal
         cargo={selectedCargoForDetail}
         isOpen={!!selectedCargoForDetail}
@@ -424,11 +366,9 @@ export default function App() {
         onCounterBid={handleCounterBid}
         onRejectBid={handleRejectBid}
         onSubmitCarrierBid={handleCarrierSubmitBid}
-        onOpenWaybill={(c) => setWaybillCargo(c)}
-        onOpenCalculator={handleOpenCalculator}
       />
 
-      {/* 3. Carrier Vehicle Settings Modal */}
+      {/* 4. Carrier Vehicle Settings Modal */}
       {profile.vehicle && (
         <CarrierVehicleModal
           isOpen={showVehicleModal}
@@ -441,7 +381,7 @@ export default function App() {
         />
       )}
 
-      {/* 4. Notifications Modal */}
+      {/* 5. Notifications Modal */}
       <NotificationsModal
         isOpen={showNotificationsModal}
         onClose={() => setShowNotificationsModal(false)}
@@ -452,43 +392,9 @@ export default function App() {
         }}
       />
 
-      {/* 5. Appwrite Cloud Settings Modal */}
-      <AppwriteSettingsModal
-        isOpen={showAppwriteModal}
-        onClose={() => setShowAppwriteModal(false)}
-        onConfigUpdated={refreshState}
-      />
-
-      {/* 6. Review Modal */}
-      <ReviewModal
-        order={reviewOrder}
-        isOpen={!!reviewOrder}
-        onClose={() => setReviewOrder(null)}
-        onSubmitSuccess={refreshState}
-      />
-
-      {/* 7. Elektron Yuk Xati (TTN / Nakladnoy) Modal */}
-      <WaybillModal
-        isOpen={!!waybillCargo || !!waybillOrder}
-        onClose={() => {
-          setWaybillCargo(null);
-          setWaybillOrder(null);
-        }}
-        cargo={waybillCargo}
-        order={waybillOrder}
-      />
-
-      {/* 8. Haydovchi Sof Foyda va Yoqilg'i Kalkulyatori Modal */}
-      <ProfitCalculatorModal
-        isOpen={showProfitCalculator}
-        onClose={() => setShowProfitCalculator(false)}
-        initialDistanceKm={calcDistanceKm}
-        initialPriceUzs={calcPriceUzs}
-      />
-
-      {/* 9. Chiqish uchun tasdiqlash xabarnomasi (Double Back to Exit Toast) */}
+      {/* Exit Toast */}
       {showExitToast && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2.5 rounded-full bg-slate-900/90 backdrop-blur-xl text-white text-xs font-bold border border-white/20 shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2.5 rounded-full bg-slate-900 text-white text-xs font-bold border border-white/20 shadow-xl flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
           <span>Ilovadan chiqish uchun yana bir bor bosing</span>
         </div>
