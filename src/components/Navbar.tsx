@@ -8,7 +8,6 @@ import {
   ArrowRightLeft, 
   Star
 } from 'lucide-react';
-import { isSupabaseConnected } from '../services/supabaseClient';
 import { isAppwriteConnected } from '../services/appwriteClient';
 
 interface NavbarProps {
@@ -17,7 +16,6 @@ interface NavbarProps {
   unreadNotificationsCount: number;
   onOpenNotifications: () => void;
   onOpenAppwriteSettings?: () => void;
-  onOpenSupabaseSettings?: () => void;
   onOpenProfile: () => void;
   userRating: number;
 }
@@ -28,14 +26,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   unreadNotificationsCount,
   onOpenNotifications,
   onOpenAppwriteSettings,
-  onOpenSupabaseSettings,
   onOpenProfile,
   userRating
 }) => {
   const isAppwrite = isAppwriteConnected();
-  const isSupabase = isSupabaseConnected();
-  const isCloud = isAppwrite || isSupabase;
-  const handleCloudClick = onOpenAppwriteSettings || onOpenSupabaseSettings || (() => {});
+  const handleCloudClick = onOpenAppwriteSettings || (() => {});
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 px-2.5 xs:px-4 pt-[calc(env(safe-area-inset-top,0px)+8px)] pb-2.5 w-full shadow-xs">
@@ -83,22 +78,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Actions */}
         <div className="flex items-center gap-1 xs:gap-1.5 shrink-0">
-          {/* Appwrite / Cloud status icon */}
+          {/* Appwrite Cloud status icon */}
           <button
             type="button"
             onClick={handleCloudClick}
             className={`w-8 h-8 xs:w-9 xs:h-9 rounded-2xl flex items-center justify-center border transition-all active:scale-95 shrink-0 relative ${
               isAppwrite 
                 ? 'bg-rose-50 text-rose-600 border-rose-200 shadow-2xs'
-                : isCloud
-                ? 'bg-emerald-50/80 text-emerald-700 border-emerald-200/80 shadow-2xs'
                 : 'bg-white/65 hover:bg-white/85 text-slate-500 border-white/80 backdrop-blur-xl shadow-2xs'
             }`}
-            title={isAppwrite ? "Appwrite Cloud ulangan (75k bepul)" : isCloud ? "Bulutli baza ulangan" : "Appwrite Cloud sozlamalari"}
+            title={isAppwrite ? "Appwrite Cloud ulangan (Frankfurt EU • 75k MAU bepul)" : "Appwrite Cloud sozlamalari"}
           >
             <Cloud className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
             {isAppwrite && (
-              <span className="absolute 1 top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white" />
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white" />
             )}
           </button>
 

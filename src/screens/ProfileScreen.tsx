@@ -29,7 +29,6 @@ interface ProfileScreenProps {
   onRoleToggle: () => void;
   onOpenVehicleModal: () => void;
   onOpenAppwriteSettings?: () => void;
-  onOpenSupabaseSettings?: () => void;
   onOpenCalculator?: () => void;
 }
 
@@ -39,7 +38,6 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onRoleToggle,
   onOpenVehicleModal,
   onOpenAppwriteSettings,
-  onOpenSupabaseSettings,
   onOpenCalculator
 }) => {
   const isCarrier = activeRole === 'yuk_tashuvchi';
@@ -310,37 +308,26 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </span>
         </a>
 
-        <button
-          type="button"
-          onClick={onOpenSupabaseSettings}
-          className="w-full p-3.5 rounded-2xl bg-white/60 hover:bg-white/80 backdrop-blur-md border border-white/80 flex items-center justify-between text-left transition-colors active:scale-99 shadow-2xs"
+        {/* Real Working Android APK Download Button */}
+        <a
+          href="/YUKTOP-v2.0.0-appwrite-cloud.apk"
+          download="YUKTOP-v2.0.0-appwrite-cloud.apk"
+          className="w-full p-3.5 rounded-2xl bg-white/60 hover:bg-white/85 backdrop-blur-md border border-white/80 flex items-center justify-between text-left shadow-2xs transition-all active:scale-99"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-teal-100/70 text-teal-800 flex items-center justify-center font-bold">
-              <Database className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="font-bold text-slate-800">Supabase / PostgreSQL Sozlamalari</div>
-              <div className="text-[10px] text-slate-400">Muqobil PostgreSQL bulutli bazasi</div>
-            </div>
-          </div>
-          <span className="text-teal-700 font-bold text-xs">Ochish →</span>
-        </button>
-
-        <div className="p-3.5 rounded-2xl bg-white/60 backdrop-blur-md border border-white/80 flex items-center justify-between text-left shadow-2xs">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-sky-100/70 text-sky-800 flex items-center justify-center font-bold">
               <Download className="w-4 h-4" />
             </div>
             <div>
-              <div className="font-bold text-slate-800">Android APK Fayli</div>
-              <div className="text-[10px] text-slate-400">YUKTOP-v2.0.0-appwrite-cloud.apk tayyor holda</div>
+              <div className="font-bold text-slate-800">Android APK yuklab olish</div>
+              <div className="text-[10px] text-slate-400">YUKTOP v2.0.0 (Haqiqiy Android ilova fayli)</div>
             </div>
           </div>
-          <span className="text-emerald-700 font-bold text-[11px] bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-300/60 backdrop-blur-md">
-            Tayyor ✓
+          <span className="text-emerald-700 font-bold text-[11px] bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-300/60 backdrop-blur-md flex items-center gap-1">
+            <span>Yuklash</span>
+            <Download className="w-3 h-3" />
           </span>
-        </div>
+        </a>
       </div>
     </div>
   );

@@ -62,8 +62,11 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
   const [selectedImage, setSelectedImage] = useState(CARGO_PRESET_IMAGES[0].url);
   const [weightTon, setWeightTon] = useState('8.5');
   const [volumeM3, setVolumeM3] = useState('24');
-  const [pickupDate, setPickupDate] = useState('2026-10-28');
-  const [deliveryDate, setDeliveryDate] = useState('2026-10-29');
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+
+  const [pickupDate, setPickupDate] = useState(todayStr);
+  const [deliveryDate, setDeliveryDate] = useState(tomorrowStr);
   const [priceUzs, setPriceUzs] = useState('3200000');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Naqd pul');
   const [urgency, setUrgency] = useState<UrgencyLevel>('Oddiy');

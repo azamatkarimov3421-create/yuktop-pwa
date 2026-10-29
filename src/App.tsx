@@ -27,7 +27,6 @@ import { OrderTrackingScreen } from './screens/OrderTrackingScreen';
 import { ChatScreen } from './screens/ChatScreen';
 import { CarrierVehicleModal } from './screens/CarrierVehicleModal';
 import { NotificationsModal } from './screens/NotificationsModal';
-import { SupabaseSettingsModal } from './screens/SupabaseSettingsModal';
 import { AppwriteSettingsModal } from './screens/AppwriteSettingsModal';
 import { ReviewModal } from './screens/ReviewModal';
 import { WaybillModal } from './components/WaybillModal';
@@ -54,7 +53,6 @@ export default function App() {
   const [activeChatOrderId, setActiveChatOrderId] = useState<string | null>(null);
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
-  const [showSupabaseModal, setShowSupabaseModal] = useState(false);
   const [showAppwriteModal, setShowAppwriteModal] = useState(false);
   const [reviewOrder, setReviewOrder] = useState<Order | null>(null);
 
@@ -93,13 +91,9 @@ export default function App() {
         setReviewOrder(null);
         return;
       }
-      // 4-daraja: Agar Appwrite yoki Supabase sozlamalari ochiq bo'lsa
+      // 4-daraja: Agar Appwrite sozlamalari ochiq bo'lsa
       if (showAppwriteModal) {
         setShowAppwriteModal(false);
-        return;
-      }
-      if (showSupabaseModal) {
-        setShowSupabaseModal(false);
         return;
       }
       // 5-daraja: Agar bildirishnomalar ochiq bo'lsa
@@ -164,7 +158,7 @@ export default function App() {
     waybillCargo,
     waybillOrder,
     reviewOrder,
-    showSupabaseModal,
+    showAppwriteModal,
     showNotificationsModal,
     showVehicleModal,
     showPostCargoModal,
@@ -276,7 +270,6 @@ export default function App() {
         unreadNotificationsCount={storageService.getUnreadNotificationCount()}
         onOpenNotifications={() => setShowNotificationsModal(true)}
         onOpenAppwriteSettings={() => setShowAppwriteModal(true)}
-        onOpenSupabaseSettings={() => setShowSupabaseModal(true)}
         onOpenProfile={() => setCurrentTab('profile')}
         userRating={profile.rating}
       />
@@ -361,7 +354,6 @@ export default function App() {
                 onRoleToggle={handleRoleToggle}
                 onOpenVehicleModal={() => setShowVehicleModal(true)}
                 onOpenAppwriteSettings={() => setShowAppwriteModal(true)}
-                onOpenSupabaseSettings={() => setShowSupabaseModal(true)}
                 onOpenCalculator={() => handleOpenCalculator(350, 4200000)}
               />
             )}
@@ -434,13 +426,6 @@ export default function App() {
       <AppwriteSettingsModal
         isOpen={showAppwriteModal}
         onClose={() => setShowAppwriteModal(false)}
-        onConfigUpdated={refreshState}
-      />
-
-      {/* 6. Supabase Settings Modal */}
-      <SupabaseSettingsModal
-        isOpen={showSupabaseModal}
-        onClose={() => setShowSupabaseModal(false)}
         onConfigUpdated={refreshState}
       />
 

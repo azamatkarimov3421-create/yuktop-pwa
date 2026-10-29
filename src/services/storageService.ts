@@ -18,7 +18,6 @@ import {
   CURRENT_USER_CARRIER
 } from '../data/initialData';
 import { calculateDirectDistanceKm } from './routingService';
-import { getSupabase } from './supabaseClient';
 import { appwriteService } from './appwriteService';
 import { isAppwriteConnected } from './appwriteClient';
 

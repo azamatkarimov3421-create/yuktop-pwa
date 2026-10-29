@@ -82,19 +82,19 @@ export const AppwriteSettingsModal: React.FC<AppwriteSettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/45 backdrop-blur-md p-0 sm:p-4">
-      <div className="w-full max-w-lg bg-white rounded-t-[32px] sm:rounded-[32px] p-5 shadow-2xl border border-slate-200 animate-in slide-in-from-bottom duration-200 max-h-[92vh] overflow-y-auto space-y-4">
+      <div className="w-full max-w-lg bg-white/88 backdrop-blur-2xl rounded-t-[32px] sm:rounded-[32px] p-5 shadow-2xl border border-white/85 animate-in slide-in-from-bottom duration-200 max-h-[92vh] overflow-y-auto space-y-4">
         {/* Mobile handle */}
         <div className="pt-1 pb-1 flex justify-center sm:hidden">
-          <div className="w-12 h-1.5 bg-slate-300 rounded-full" />
+          <div className="w-12 h-1.5 bg-slate-300/60 rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b border-white/80">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-bold transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/80 text-slate-700 hover:bg-white text-xs font-bold transition-all shadow-2xs active:scale-95"
               title="Orqaga qaytish"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
@@ -116,7 +116,7 @@ export const AppwriteSettingsModal: React.FC<AppwriteSettingsModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors"
+            className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-md border border-white/80 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors shadow-2xs"
           >
             <X className="w-4 h-4" />
           </button>

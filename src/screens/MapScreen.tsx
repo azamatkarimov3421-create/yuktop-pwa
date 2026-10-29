@@ -77,30 +77,39 @@ export const MapScreen: React.FC<MapScreenProps> = ({
           ) : (
             <div className="space-y-3">
               {/* Order selector pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none text-xs">
-                {activeOrders.map(ord => (
-                  <button
-                    key={ord.id}
-                    type="button"
-                    onClick={() => setSelectedOrder(ord)}
-                    className={`px-3.5 py-2 rounded-full flex items-center gap-2 whitespace-nowrap transition-all border text-xs font-bold active:scale-95 shadow-2xs ${
-                      selectedOrder?.id === ord.id
-                        ? 'bg-teal-700 text-white border-teal-700 shadow-xs'
-                        : 'bg-white/70 backdrop-blur-xl text-slate-700 border-white/85 hover:bg-white'
-                    }`}
-                  >
-                    <Truck className="w-3.5 h-3.5" />
-                    <span>{ord.orderCode} - {ord.driverName.split(' ')[0]}</span>
-                  </button>
-                ))}
-              </div>
+              {(() => {
+                const currentOrder = (selectedOrder && activeOrders.some(o => o.id === selectedOrder.id)) 
+                  ? selectedOrder 
+                  : activeOrders[0];
+                return (
+                  <>
+                    <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none text-xs">
+                      {activeOrders.map(ord => (
+                        <button
+                          key={ord.id}
+                          type="button"
+                          onClick={() => setSelectedOrder(ord)}
+                          className={`px-3.5 py-2 rounded-full flex items-center gap-2 whitespace-nowrap transition-all border text-xs font-bold active:scale-95 shadow-2xs ${
+                            currentOrder?.id === ord.id
+                              ? 'bg-teal-700 text-white border-teal-700 shadow-xs'
+                              : 'bg-white/70 backdrop-blur-xl text-slate-700 border-white/85 hover:bg-white'
+                          }`}
+                        >
+                          <Truck className="w-3.5 h-3.5" />
+                          <span>{ord.orderCode} - {ord.driverName.split(' ')[0]}</span>
+                        </button>
+                      ))}
+                    </div>
 
-              {selectedOrder && (
-                <TrackingMap
-                  order={selectedOrder}
-                  isCarrierView={activeRole === 'yuk_tashuvchi'}
-                />
-              )}
+                    {currentOrder && (
+                      <TrackingMap
+                        order={currentOrder}
+                        isCarrierView={activeRole === 'yuk_tashuvchi'}
+                      />
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
         </div>
