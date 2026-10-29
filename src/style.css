@@ -1,40 +1,200 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
   * {
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
     box-sizing: border-box;
   }
   
-  body {
+  /* SINGLE ROOT SCROLLER ARCHITECTURE (120FPS SILK-SMOOTH ANDROID) */
+  html {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: #0F172A;
-    color: #1E293B;
-    overflow-x: hidden;
+    background-color: #F8FAFC !important;
+    color: #0F172A;
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y pinch-zoom;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow: visible !important;
+    touch-action: pan-y;
+    overscroll-behavior-y: none !important;
+    background-color: #F8FAFC !important;
+    color: #0F172A;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important;
   }
 }
 
-/* Custom Scrollbar */
+/* ============================================================
+   ZERO-LAG 120FPS GPU HARDWARE ACCELERATED STYLING
+   ============================================================ */
+
+/* 1. Eliminate 100% of expensive GPU Gaussian blur shaders across all elements */
+*,
+*::before,
+*::after,
+[class*="backdrop-blur"],
+.glass-card,
+.glass-card-subtle,
+.glass-input,
+.glass-pill,
+.glass-pill-teal,
+.glass-nav,
+header.sticky,
+.soft-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 2. Remove transform scale on list cards so touching to scroll never stutters */
+div[onClick],
+.cursor-pointer {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent scale down or heavy transition on touchstart while scrolling */
+.cargo-card,
+[class*="active:scale-99"],
+[class*="active:scale-98"] {
+  transform: none !important;
+  transition: border-color 0.1s ease, background-color 0.1s ease !important;
+}
+
+/* 3. Hardware isolation for list cards to prevent full-page layout thrashing */
+.cargo-card,
+[class*="rounded-2xl"],
+[class*="rounded-[26px]"],
+[class*="rounded-[28px]"] {
+  contain: layout style paint;
+}
+
+/* 4. Crisp, high-contrast snow-white cards with lightweight 1px borders & soft shadows */
+.glass-card,
+.soft-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04) !important;
+  border-radius: 20px;
+}
+
+.glass-card-subtle {
+  background-color: #FFFFFF !important;
+  border: 1px solid rgba(241, 245, 249, 1) !important;
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03) !important;
+  border-radius: 18px;
+}
+
+/* 5. Sticky Header - Pure Solid White, Hardware Composited Layer */
+header.sticky {
+  background-color: #FFFFFF !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05) !important;
+  transform: translateZ(0);
+}
+
+/* 6. Floating Bottom Navigation - Solid Pure White, Hardware Layer */
+.glass-nav,
+[class*="BottomNavigation"] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08) !important;
+  transform: translateZ(0);
+}
+
+/* 7. Modal Bottom Sheets */
+.glass-modal-sheet {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.25) !important;
+}
+
+/* 8. Map all semi-transparent white card utilities to solid white */
+[class*="bg-white/60"],
+[class*="bg-white/65"],
+[class*="bg-white/70"],
+[class*="bg-white/72"],
+[class*="bg-white/75"],
+[class*="bg-white/80"],
+[class*="bg-white/85"] {
+  background-color: #FFFFFF !important;
+}
+
+/* Form Inputs */
+.glass-input {
+  background-color: #F8FAFC !important;
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+}
+
+.glass-input:focus {
+  background-color: #FFFFFF !important;
+  border-color: rgba(13, 148, 136, 0.9) !important;
+}
+
+/* Glass Pill Chips */
+.glass-pill {
+  background-color: #F1F5F9 !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+}
+
+/* Active Teal Pill */
+.glass-pill-teal {
+  background-color: rgba(204, 251, 241, 0.9) !important;
+  border: 1px solid rgba(153, 246, 228, 1) !important;
+  color: #0F766E !important;
+}
+
+/* Primary Teal Action Button */
+.glass-btn-teal {
+  background: linear-gradient(135deg, #0F766E 0%, #0D9488 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 14px -2px rgba(13, 148, 136, 0.35) !important;
+}
+
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: rgba(203, 213, 225, 0.5);
   border-radius: 9999px;
 }
 
-/* Hide scrollbar for tabs */
-.no-scrollbar::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar {
   display: none;
 }
-.no-scrollbar {
+.scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -42,51 +202,38 @@
 /* Leaflet Map overrides for modern mobile look */
 .leaflet-container {
   font-family: inherit !important;
-  z-index: 10 !important;
+  z-index: 5 !important;
+  border-radius: 20px;
+  width: 100% !important;
 }
 
 .leaflet-control-attribution {
   display: none !important;
 }
 
-/* Pulse animation for live tracking radar */
-@keyframes radar-pulse {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(11, 99, 246, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 15px rgba(11, 99, 246, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(11, 99, 246, 0);
-  }
+.leaflet-bar {
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
 }
 
-.animate-radar {
-  animation: radar-pulse 2s infinite;
+.leaflet-bar a {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border: none !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
 }
 
-/* Truck driving animation */
-@keyframes truck-drive {
-  0%, 100% {
-    transform: translateY(0px);
+/* Small screen helpers (< 375px) */
+@media (max-width: 374px) {
+  .xs-hide-text {
+    display: none !important;
   }
-  50% {
-    transform: translateY(-2px);
+  .xs-compact-padding {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
   }
-}
-
-.animate-truck-drive {
-  animation: truck-drive 1s ease-in-out infinite;
-}
-
-/* iOS-style safe area paddings */
-.safe-top {
-  padding-top: env(safe-area-inset-top, 0px);
-}
-.safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

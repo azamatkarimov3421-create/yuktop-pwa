@@ -55,13 +55,13 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
   if (!showBanner) return null;
 
   return (
-    <div className="absolute top-12 left-4 right-4 z-40 bg-slate-900/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-xl border border-blue-500/30 flex items-center justify-between animate-in fade-in slide-in-from-top-4 duration-300">
+    <div className="absolute top-12 left-4 right-4 z-40 bg-slate-900/80 backdrop-blur-2xl text-white p-3.5 rounded-3xl shadow-2xl border border-white/20 flex items-center justify-between animate-in fade-in slide-in-from-top-4 duration-300">
       <div className="flex items-center space-x-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0B63F6] to-[#0047C7] flex items-center justify-center shadow-xs shrink-0">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-sky-600 flex items-center justify-center shadow-md shrink-0 border border-white/20">
           <Download className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h4 className="text-xs font-bold text-white tracking-tight">{appName} PWA</h4>
+          <h4 className="text-xs font-bold text-white tracking-tight">{appName}</h4>
           <p className="text-[10px] text-slate-300 leading-tight max-w-[180px]">{installDesc}</p>
         </div>
       </div>
@@ -69,13 +69,13 @@ export const PWAInstallBanner: React.FC<PWAInstallBannerProps> = ({
       <div className="flex items-center space-x-1.5">
         <button
           onClick={handleInstall}
-          className="px-3 py-1.5 bg-[#0B63F6] hover:bg-blue-600 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
+          className="px-3.5 py-1.5 bg-white/20 hover:bg-white/30 active:scale-95 text-white border border-white/30 rounded-full text-xs font-bold backdrop-blur-md transition-all shadow-xs"
         >
           {installText}
         </button>
         <button
           onClick={() => setShowBanner(false)}
-          className="w-7 h-7 rounded-full text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+          className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition-colors"
         >
           <X className="w-4 h-4" />
         </button>

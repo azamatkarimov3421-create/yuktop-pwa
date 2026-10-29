@@ -12,8 +12,19 @@ dist
 dist-ssr
 *.local
 
+# APK and Binary files
+*.apk
+*.aar
+*.aab
+
 # Vercel
 .vercel
+
+# Android local
+android/local.properties
+android/.gradle/
+android/app/build/
+android/build/
 
 # Editor directories and files
 .vscode/*
