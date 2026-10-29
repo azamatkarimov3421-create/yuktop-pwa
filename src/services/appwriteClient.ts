@@ -6,7 +6,8 @@ const STORAGE_KEYS = {
   DATABASE_ID: 'yuktop_appwrite_database_id'
 };
 
-export const DEFAULT_APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+export const DEFAULT_APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+export const DEFAULT_APPWRITE_PROJECT_ID = '6ae2ea99001accd5eab5';
 export const DEFAULT_APPWRITE_DATABASE_ID = 'yuktop_db';
 
 export const APPWRITE_COLLECTIONS = {
@@ -27,7 +28,7 @@ export interface AppwriteConfig {
 
 export function getStoredAppwriteConfig(): AppwriteConfig {
   const endpoint = localStorage.getItem(STORAGE_KEYS.ENDPOINT) || (import.meta as any).env?.VITE_APPWRITE_ENDPOINT || DEFAULT_APPWRITE_ENDPOINT;
-  const projectId = localStorage.getItem(STORAGE_KEYS.PROJECT_ID) || (import.meta as any).env?.VITE_APPWRITE_PROJECT_ID || '';
+  const projectId = localStorage.getItem(STORAGE_KEYS.PROJECT_ID) || (import.meta as any).env?.VITE_APPWRITE_PROJECT_ID || DEFAULT_APPWRITE_PROJECT_ID;
   const databaseId = localStorage.getItem(STORAGE_KEYS.DATABASE_ID) || (import.meta as any).env?.VITE_APPWRITE_DATABASE_ID || DEFAULT_APPWRITE_DATABASE_ID;
   return { endpoint, projectId, databaseId };
 }
@@ -60,6 +61,7 @@ export function getAppwriteClient(): Client | null {
       const client = new Client();
       client.setEndpoint(endpoint || DEFAULT_APPWRITE_ENDPOINT);
       client.setProject(projectId);
+      client.ping().catch(() => {});
       cachedClient = client;
     } catch (e) {
       console.warn('Appwrite Client init error:', e);
