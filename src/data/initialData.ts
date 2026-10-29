@@ -1,4 +1,4 @@
-import { CargoItem, Vehicle, Bid, Order, UserProfile, NotificationItem } from '../types';
+import { CargoItem, Vehicle, Bid, Order, UserProfile, NotificationItem, CarrierTripAd } from '../types';
 import { UZBEKISTAN_CITIES } from './uzbekistanLocations';
 
 export const INITIAL_CARGOS: CargoItem[] = [
@@ -10,13 +10,16 @@ export const INITIAL_CARGOS: CargoItem[] = [
     ownerTelegram: 'farhod_logist',
     title: 'Pishgan qizil g\'isht (10,000 dona)',
     category: 'Qurilish mollari',
+    loadType: 'tolik_mashina',
     imageUrl: 'https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=600&q=80',
     weightKg: 18000,
     volumeM3: 32,
     pickupLocation: UZBEKISTAN_CITIES[0], // Toshkent Chilonzor
     deliveryLocation: UZBEKISTAN_CITIES[3], // Samarqand Siyob
-    pickupDate: '2026-10-28',
-    deliveryDate: '2026-10-29',
+    pickupDate: '2026-10-30',
+    pickupTimeWindow: '08:00 - 12:00 (Ertalab)',
+    deliveryDate: '2026-10-31',
+    deliveryTimeWindow: '18:00 gacha',
     priceUzs: 4200000,
     paymentMethod: 'Naqd pul',
     urgency: 'Shoshilinch (Bugun)',
@@ -36,20 +39,23 @@ export const INITIAL_CARGOS: CargoItem[] = [
     ownerTelegram: 'nodira_agro',
     title: 'Muzlatilgan mevalar va uzum (Eksport)',
     category: 'Meva va sabzavotlar',
+    loadType: 'yigma_yuk',
     imageUrl: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=600&q=80',
-    weightKg: 8500,
-    volumeM3: 26,
+    weightKg: 3500,
+    volumeM3: 12,
     pickupLocation: UZBEKISTAN_CITIES[6], // Andijon
     deliveryLocation: UZBEKISTAN_CITIES[1], // Toshkent Sergeli logistika
-    pickupDate: '2026-10-29',
-    deliveryDate: '2026-10-30',
-    priceUzs: 3800000,
+    pickupDate: '2026-10-30',
+    pickupTimeWindow: '14:00 - 18:00 (Tushdan keyin)',
+    deliveryDate: '2026-10-31',
+    deliveryTimeWindow: 'Ertasi kuni 12:00 gacha',
+    priceUzs: 1800000,
     paymentMethod: 'Karta (Click / Payme / Humo)',
     urgency: 'Oddiy',
     hasDocuments: true,
     distanceKm: 350,
     durationMinutes: 320,
-    specialNotes: '+2°C harorat rejimini saqlash shart (Refrijerator talab qilinadi).',
+    specialNotes: 'Yig\'ma yuk! Mashinada boshqa yuklar bo\'lsa ham bo\'ladi (+2°C rejim).',
     status: 'taklif_kutilmoqda',
     createdAt: '2026-10-27T09:15:00Z',
     bidsCount: 1
@@ -270,5 +276,95 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     type: 'system',
     createdAt: '1 kun oldin',
     isRead: true
+  }
+];
+
+export const INITIAL_CARRIER_TRIPS: CarrierTripAd[] = [
+  {
+    id: 'trip-201',
+    driverId: 'drv-current',
+    driverName: 'Akmal Rustamov',
+    driverPhone: '+998912345678',
+    driverTelegram: 'akmal_trans',
+    driverRating: 4.95,
+    vehicleModel: 'Isuzu FVR 34 (Tentli)',
+    vehiclePlate: '01 777 AAA',
+    transportType: 'Isuzu (Bortli)',
+    totalCapacityTon: 10,
+    availableCapacityTon: 5.5, // 4.5t band, 5.5t bo'sh
+    totalVolumeM3: 36,
+    availableVolumeM3: 19,
+    departureLocation: UZBEKISTAN_CITIES[0], // Toshkent
+    destinationLocation: UZBEKISTAN_CITIES[3], // Samarqand
+    departureDate: '2026-10-30',
+    departureTimeWindow: '08:00 - 11:00 oralig\'ida',
+    deliveryDate: '2026-10-30',
+    deliveryTimeWindow: '18:00 gacha yetkazish',
+    pricePerTonUzs: 380000,
+    totalTripPriceUzs: 3800000,
+    isConsolidated: true, // Bir nechta kishi yuki olinadi
+    maxShippersCount: 5,
+    currentShippersCount: 2, // Hozir 2 kishidan yuk olingan
+    specialNotes: 'Mashinada 5.5 tonna bo\'sh joy bor! 100 kg dan 5.5 tonnagacha yig\'ma yuklar qabul qilinadi.',
+    createdAt: '2026-10-29T10:00:00Z',
+    status: 'faol'
+  },
+  {
+    id: 'trip-202',
+    driverId: 'drv-sherzod',
+    driverName: 'Sherzod Qodirov',
+    driverPhone: '+998905554433',
+    driverTelegram: 'sherzod_fura',
+    driverRating: 4.88,
+    vehicleModel: 'MAN TGX 18.440 (Fura)',
+    vehiclePlate: '30 888 BBB',
+    transportType: 'Fura (Tentli)',
+    totalCapacityTon: 22,
+    availableCapacityTon: 11.0, // 11t band, 11t bo'sh
+    totalVolumeM3: 86,
+    availableVolumeM3: 42,
+    departureLocation: UZBEKISTAN_CITIES[6], // Andijon
+    destinationLocation: UZBEKISTAN_CITIES[0], // Toshkent
+    departureDate: '2026-10-31',
+    departureTimeWindow: '07:00 - 10:00 oralig\'ida',
+    deliveryDate: '2026-10-31',
+    deliveryTimeWindow: '20:00 gacha',
+    pricePerTonUzs: 240000,
+    totalTripPriceUzs: 5000000,
+    isConsolidated: true,
+    maxShippersCount: 5,
+    currentShippersCount: 1,
+    specialNotes: 'Qamchiq dovoni orqali Toshkentga qaytish reysi. 11 tonnagacha bo\'sh joy mavjud.',
+    createdAt: '2026-10-29T14:30:00Z',
+    status: 'faol'
+  },
+  {
+    id: 'trip-203',
+    driverId: 'drv-jamshid',
+    driverName: 'Jamshid Karimov',
+    driverPhone: '+998971112233',
+    driverTelegram: 'jamshid_gazel',
+    driverRating: 4.9,
+    vehicleModel: 'Gazel NEXT (Kuzov 4.2m)',
+    vehiclePlate: '20 456 CCC',
+    transportType: 'Gazel (Tentli)',
+    totalCapacityTon: 3.5,
+    availableCapacityTon: 2.0, // 1.5t band, 2.0t bo'sh
+    totalVolumeM3: 16,
+    availableVolumeM3: 9,
+    departureLocation: UZBEKISTAN_CITIES[3], // Samarqand
+    destinationLocation: UZBEKISTAN_CITIES[4], // Buxoro
+    departureDate: '2026-10-30',
+    departureTimeWindow: '12:00 - 15:00 oralig\'ida',
+    deliveryDate: '2026-10-30',
+    deliveryTimeWindow: '21:00 gacha',
+    pricePerTonUzs: 450000,
+    totalTripPriceUzs: 1500000,
+    isConsolidated: true,
+    maxShippersCount: 4,
+    currentShippersCount: 1,
+    specialNotes: 'Mebel, maishiy texnika va qutilar uchun bo\'sh joy bor.',
+    createdAt: '2026-10-29T16:00:00Z',
+    status: 'faol'
   }
 ];

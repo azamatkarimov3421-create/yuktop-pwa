@@ -14,12 +14,26 @@ async function setupWithKey(apiKey) {
 
   const db = new Databases(client);
 
+  console.log('--- 0. DATABASE TEKSHIRILMOQDA ---');
+  try {
+    await db.get(DATABASE_ID);
+    console.log(`✅ Database [${DATABASE_ID}] mavjud.`);
+  } catch (e) {
+    try {
+      await db.create(DATABASE_ID, 'YukTop Database');
+      console.log(`✅ Database [${DATABASE_ID}] yangi yaratildi!`);
+    } catch (err) {
+      console.log(`Database tekshirish natijasi: ${err.message}`);
+    }
+  }
+
   console.log('--- 1. COLLECTIONS YARATILMOQDA ---');
   const collections = [
     { id: 'cargos', name: 'Cargos' },
     { id: 'bids', name: 'Bids' },
     { id: 'orders', name: 'Orders' },
-    { id: 'messages', name: 'Messages' }
+    { id: 'messages', name: 'Messages' },
+    { id: 'carrier_trips', name: 'CarrierTrips' }
   ];
 
   const permissions = [
@@ -98,6 +112,9 @@ async function setupWithKey(apiKey) {
   await createAttr('cargos', 'string', 'specialNotes', 2048);
   await createAttr('cargos', 'string', 'status', 255);
   await createAttr('cargos', 'integer', 'bidsCount');
+  await createAttr('cargos', 'string', 'loadType', 100);
+  await createAttr('cargos', 'string', 'pickupTimeWindow', 100);
+  await createAttr('cargos', 'string', 'deliveryTimeWindow', 100);
 
   console.log('\n--- 3. BIDS ATTRIBUTES ---');
   await createAttr('bids', 'string', 'cargoId', 255);
@@ -145,6 +162,9 @@ async function setupWithKey(apiKey) {
   await createAttr('orders', 'float', 'driverLat');
   await createAttr('orders', 'float', 'driverLng');
   await createAttr('orders', 'integer', 'driverSpeed');
+  await createAttr('orders', 'string', 'loadType', 100);
+  await createAttr('orders', 'string', 'pickupTimeWindow', 100);
+  await createAttr('orders', 'string', 'deliveryTimeWindow', 100);
 
   console.log('\n--- 5. MESSAGES ATTRIBUTES ---');
   await createAttr('messages', 'string', 'orderId', 255);
@@ -153,6 +173,37 @@ async function setupWithKey(apiKey) {
   await createAttr('messages', 'string', 'senderName', 255);
   await createAttr('messages', 'string', 'text', 4000);
   await createAttr('messages', 'boolean', 'isRead');
+
+  console.log('\n--- 6. CARRIER TRIPS ATTRIBUTES ---');
+  await createAttr('carrier_trips', 'string', 'carrierId', 255);
+  await createAttr('carrier_trips', 'string', 'carrierName', 255);
+  await createAttr('carrier_trips', 'string', 'carrierPhone', 255);
+  await createAttr('carrier_trips', 'float', 'carrierRating');
+  await createAttr('carrier_trips', 'string', 'vehicleModel', 255);
+  await createAttr('carrier_trips', 'string', 'vehiclePlate', 255);
+  await createAttr('carrier_trips', 'string', 'transportType', 255);
+  await createAttr('carrier_trips', 'float', 'totalCapacityTon');
+  await createAttr('carrier_trips', 'float', 'availableCapacityTon');
+  await createAttr('carrier_trips', 'float', 'totalVolumeM3');
+  await createAttr('carrier_trips', 'float', 'availableVolumeM3');
+  await createAttr('carrier_trips', 'boolean', 'isConsolidated');
+  await createAttr('carrier_trips', 'integer', 'maxShippersCount');
+  await createAttr('carrier_trips', 'integer', 'currentShippersCount');
+  await createAttr('carrier_trips', 'string', 'fromCity', 255);
+  await createAttr('carrier_trips', 'string', 'fromAddress', 500);
+  await createAttr('carrier_trips', 'float', 'fromLat');
+  await createAttr('carrier_trips', 'float', 'fromLng');
+  await createAttr('carrier_trips', 'string', 'toCity', 255);
+  await createAttr('carrier_trips', 'string', 'toAddress', 500);
+  await createAttr('carrier_trips', 'float', 'toLat');
+  await createAttr('carrier_trips', 'float', 'toLng');
+  await createAttr('carrier_trips', 'string', 'departureDate', 255);
+  await createAttr('carrier_trips', 'string', 'departureTimeWindow', 255);
+  await createAttr('carrier_trips', 'string', 'deliveryDate', 255);
+  await createAttr('carrier_trips', 'string', 'deliveryTimeWindow', 255);
+  await createAttr('carrier_trips', 'integer', 'pricePerTonUzs');
+  await createAttr('carrier_trips', 'string', 'notes', 2048);
+  await createAttr('carrier_trips', 'string', 'status', 255);
 
   console.log('\n🎉 TABRIKLAYMIZ! BARCHA JADVALLAR VA USTUNLAR TO\'LIQ YARATILDI!');
 }

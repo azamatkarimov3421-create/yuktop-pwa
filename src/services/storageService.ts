@@ -7,13 +7,15 @@ import {
   ChatMessage, 
   NotificationItem, 
   UserRole,
-  Vehicle
+  Vehicle,
+  CarrierTripAd
 } from '../types';
 import { 
   INITIAL_CARGOS, 
   INITIAL_BIDS, 
   INITIAL_ORDERS, 
   INITIAL_NOTIFICATIONS,
+  INITIAL_CARRIER_TRIPS,
   CURRENT_USER_SHIPPER,
   CURRENT_USER_CARRIER
 } from '../data/initialData';
@@ -23,6 +25,7 @@ import { isAppwriteConnected } from './appwriteClient';
 
 const STORAGE_KEYS = {
   CARGOS: 'yuktop_cargos_v2',
+  CARRIER_TRIPS: 'yuktop_carrier_trips_v2',
   BIDS: 'yuktop_bids_v2',
   ORDERS: 'yuktop_orders_v2',
   NOTIFICATIONS: 'yuktop_notifications_v2',
@@ -34,6 +37,7 @@ const STORAGE_KEYS = {
 
 class StorageService {
   private cargos: CargoItem[] = [];
+  private carrierTrips: CarrierTripAd[] = [];
   private bids: Bid[] = [];
   private orders: Order[] = [];
   private notifications: NotificationItem[] = [];
@@ -51,6 +55,9 @@ class StorageService {
     try {
       const storedCargos = localStorage.getItem(STORAGE_KEYS.CARGOS);
       this.cargos = storedCargos ? JSON.parse(storedCargos) : INITIAL_CARGOS;
+
+      const storedTrips = localStorage.getItem(STORAGE_KEYS.CARRIER_TRIPS);
+      this.carrierTrips = storedTrips ? JSON.parse(storedTrips) : INITIAL_CARRIER_TRIPS;
 
       const storedBids = localStorage.getItem(STORAGE_KEYS.BIDS);
       this.bids = storedBids ? JSON.parse(storedBids) : INITIAL_BIDS;
@@ -117,6 +124,7 @@ class StorageService {
   private save() {
     try {
       localStorage.setItem(STORAGE_KEYS.CARGOS, JSON.stringify(this.cargos));
+      localStorage.setItem(STORAGE_KEYS.CARRIER_TRIPS, JSON.stringify(this.carrierTrips));
       localStorage.setItem(STORAGE_KEYS.BIDS, JSON.stringify(this.bids));
       localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(this.orders));
       localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(this.notifications));
@@ -201,6 +209,50 @@ class StorageService {
     }
 
     return cargo;
+  }
+
+  // --- CARRIER TRIPS & AVAILABLE CAPACITY (HAYDOVCHI REYSLARI VA BO'SH JOYI) ---
+  public getCarrierTrips(): CarrierTripAd[] {
+    return [...this.carrierTrips];
+  }
+
+  public getCarrierTripById(id: string): CarrierTripAd | undefined {
+    return this.carrierTrips.find(t => t.id === id);
+  }
+
+  public addCarrierTrip(newTrip: Omit<CarrierTripAd, 'id' | 'createdAt' | 'status' | 'currentShippersCount'>): CarrierTripAd {
+    const trip: CarrierTripAd = {
+      ...newTrip,
+      id: `trip-${Date.now()}`,
+      currentShippersCount: 0,
+      status: 'faol',
+      createdAt: new Date().toISOString()
+    };
+    this.carrierTrips.unshift(trip);
+
+    this.addNotification({
+      title: 'Yangi reys / bo\'sh transport e\'lon qilindi',
+      message: `${trip.departureLocation.city} ➔ ${trip.destinationLocation.city} yo'nalishida ${trip.availableCapacityTon}t bo'sh joy e'lon qilindi.`,
+      type: 'order'
+    });
+
+    this.save();
+    return trip;
+  }
+
+  public bookTripSpace(tripId: string, cargoWeightKg: number): boolean {
+    const trip = this.getCarrierTripById(tripId);
+    if (!trip) return false;
+    const weightTon = cargoWeightKg / 1000;
+    if (trip.availableCapacityTon < weightTon) return false;
+
+    trip.availableCapacityTon = Number((trip.availableCapacityTon - weightTon).toFixed(1));
+    trip.currentShippersCount = (trip.currentShippersCount || 0) + 1;
+    if (trip.availableCapacityTon <= 0) {
+      trip.availableCapacityTon = 0;
+    }
+    this.save();
+    return true;
   }
 
   // --- BIDS & BARGAINING ---
@@ -294,6 +346,7 @@ class StorageService {
       cargoId: cargo.id,
       cargoTitle: cargo.title,
       category: cargo.category,
+      loadType: cargo.loadType || 'tolik_mashina',
       weightKg: cargo.weightKg,
       volumeM3: cargo.volumeM3,
       paymentMethod: cargo.paymentMethod || 'Naqd pul',
@@ -314,7 +367,9 @@ class StorageService {
       pickupLocation: cargo.pickupLocation,
       deliveryLocation: cargo.deliveryLocation,
       pickupDate: cargo.pickupDate,
+      pickupTimeWindow: cargo.pickupTimeWindow,
       deliveryDate: cargo.deliveryDate,
+      deliveryTimeWindow: cargo.deliveryTimeWindow,
       agreedPriceUzs: orderPrice,
       distanceKm: cargo.distanceKm,
       durationMinutes: cargo.durationMinutes,

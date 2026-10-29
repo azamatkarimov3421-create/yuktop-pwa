@@ -33,13 +33,16 @@ interface PostCargoModalProps {
   onSubmit: (cargoData: {
     title: string;
     category: CargoCategory;
+    loadType: import('../types').LoadType;
     imageUrl: string;
     weightKg: number;
     volumeM3: number;
     pickupLocation: LocationPoint;
     deliveryLocation: LocationPoint;
     pickupDate: string;
+    pickupTimeWindow: string;
     deliveryDate: string;
+    deliveryTimeWindow: string;
     priceUzs: number;
     paymentMethod: PaymentMethod;
     urgency: UrgencyLevel;
@@ -59,15 +62,18 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
 
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<CargoCategory>('Qurilish mollari');
+  const [loadType, setLoadType] = useState<import('../types').LoadType>('yigma_yuk');
   const [selectedImage, setSelectedImage] = useState(CARGO_PRESET_IMAGES[0].url);
-  const [weightTon, setWeightTon] = useState('8.5');
-  const [volumeM3, setVolumeM3] = useState('24');
+  const [weightTon, setWeightTon] = useState('3.5');
+  const [volumeM3, setVolumeM3] = useState('14');
   const todayStr = new Date().toISOString().slice(0, 10);
   const tomorrowStr = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
   const [pickupDate, setPickupDate] = useState(todayStr);
+  const [pickupTimeWindow, setPickupTimeWindow] = useState('08:00 - 12:00 (Ertalab)');
   const [deliveryDate, setDeliveryDate] = useState(tomorrowStr);
-  const [priceUzs, setPriceUzs] = useState('3200000');
+  const [deliveryTimeWindow, setDeliveryTimeWindow] = useState('18:00 gacha');
+  const [priceUzs, setPriceUzs] = useState('2200000');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Naqd pul');
   const [urgency, setUrgency] = useState<UrgencyLevel>('Oddiy');
   const [hasDocuments, setHasDocuments] = useState(true);
@@ -152,13 +158,16 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
     onSubmit({
       title: title.trim(),
       category,
+      loadType,
       imageUrl: selectedImage,
       weightKg: Math.round(weight * 1000),
       volumeM3: parseFloat(volumeM3) || 20,
       pickupLocation: pointA,
       deliveryLocation: pointB,
       pickupDate,
+      pickupTimeWindow,
       deliveryDate,
+      deliveryTimeWindow,
       priceUzs: price,
       paymentMethod,
       urgency,
@@ -306,11 +315,59 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
             )}
           </div>
 
-          {/* 2. Parametrlari */}
+          {/* 2. Parametrlari va Yuk Formati */}
           <div className="space-y-2.5">
             <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              2. Og'irligi va Hajmi
+              2. Yuk turi, Og'irligi va Hajmi
             </label>
+
+            {/* Load Type Selector: To'liq mashina vs Yig'ma / Poputniy */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setLoadType('yigma_yuk')}
+                className={`p-3 rounded-2xl border text-left transition-all ${
+                  loadType === 'yigma_yuk'
+                    ? 'bg-teal-500/15 border-teal-600 ring-2 ring-teal-200'
+                    : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                    <span>📦 Yig'ma yuk (LTL)</span>
+                  </span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    Tejamkor
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1 leading-tight">
+                  Boshqa yuklar bilan bitta mashinada (poputniy). Arzon narxda yetkaziladi.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLoadType('tolik_mashina')}
+                className={`p-3 rounded-2xl border text-left transition-all ${
+                  loadType === 'tolik_mashina'
+                    ? 'bg-teal-500/15 border-teal-600 ring-2 ring-teal-200'
+                    : 'bg-white/70 border-slate-200 text-slate-600 hover:bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                    <span>🚚 To'liq mashina (FTL)</span>
+                  </span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-800">
+                    Alohida
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1 leading-tight">
+                  Butun yuk mashinasi faqat sizning yukingiz uchun yollanadi.
+                </p>
+              </button>
+            </div>
+
             <div className="grid grid-cols-2 gap-2.5">
               <div>
                 <span className="text-[11px] text-slate-500 mb-1 block flex items-center gap-1 font-medium">
@@ -321,7 +378,7 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
                   step="0.1"
                   value={weightTon}
                   onChange={e => setWeightTon(e.target.value)}
-                  placeholder="Masalan: 5.5"
+                  placeholder="Masalan: 3.5"
                   className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white"
                   required
                 />
@@ -336,7 +393,7 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
                   step="1"
                   value={volumeM3}
                   onChange={e => setVolumeM3(e.target.value)}
-                  placeholder="Masalan: 30"
+                  placeholder="Masalan: 14"
                   className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white"
                   required
                 />
@@ -514,32 +571,56 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
               </div>
             </div>
 
-            {/* Muddatlar */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <div>
-                <span className="text-[11px] text-slate-500 mb-1 block flex items-center gap-1 font-medium">
-                  <Calendar className="w-3 h-3 text-slate-400" /> Yuklash sanasi:
-                </span>
-                <input
-                  type="date"
-                  value={pickupDate}
-                  onChange={e => setPickupDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white"
-                  required
-                />
-              </div>
+            {/* Muddatlar va Vaqt Oralig'i */}
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div>
+                  <span className="text-[11px] text-slate-500 mb-1 block flex items-center gap-1 font-medium">
+                    <Calendar className="w-3 h-3 text-slate-400" /> Yuklash sanasi:
+                  </span>
+                  <input
+                    type="date"
+                    value={pickupDate}
+                    onChange={e => setPickupDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white"
+                    required
+                  />
+                  {/* Yuklash vaqt oralig'i */}
+                  <select
+                    value={pickupTimeWindow}
+                    onChange={e => setPickupTimeWindow(e.target.value)}
+                    className="w-full mt-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-semibold text-slate-700"
+                  >
+                    <option value="08:00 - 12:00 (Ertalab)">08:00 - 12:00 (Ertalab)</option>
+                    <option value="12:00 - 17:00 (Tushdan keyin)">12:00 - 17:00 (Tushdan keyin)</option>
+                    <option value="17:00 - 21:00 (Oqshom)">17:00 - 21:00 (Oqshom)</option>
+                    <option value="Ixtiyoriy vaqt">Ixtiyoriy vaqt</option>
+                  </select>
+                </div>
 
-              <div>
-                <span className="text-[11px] text-slate-500 mb-1 block flex items-center gap-1 font-medium">
-                  <Calendar className="w-3 h-3 text-slate-400" /> Yetkazish sanasi:
-                </span>
-                <input
-                  type="date"
-                  value={deliveryDate}
-                  onChange={e => setDeliveryDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white"
-                  required
-                />
+                <div>
+                  <span className="text-[11px] text-slate-500 mb-1 block flex items-center gap-1 font-medium">
+                    <Calendar className="w-3 h-3 text-slate-400" /> Yetkazish sanasi:
+                  </span>
+                  <input
+                    type="date"
+                    value={deliveryDate}
+                    onChange={e => setDeliveryDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-600 focus:bg-white"
+                    required
+                  />
+                  {/* Yetkazish vaqt oralig'i */}
+                  <select
+                    value={deliveryTimeWindow}
+                    onChange={e => setDeliveryTimeWindow(e.target.value)}
+                    className="w-full mt-1.5 px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-semibold text-slate-700"
+                  >
+                    <option value="18:00 gacha">18:00 gacha yetkazish</option>
+                    <option value="12:00 gacha (Tushgacha)">12:00 gacha (Tushgacha)</option>
+                    <option value="24 soat ichida">24 soat ichida</option>
+                    <option value="Aniq kelishilgan vaqtda">Aniq kelishilgan vaqtda</option>
+                  </select>
+                </div>
               </div>
             </div>
 

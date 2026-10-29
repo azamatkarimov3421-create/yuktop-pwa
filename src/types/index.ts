@@ -16,6 +16,8 @@ export type PaymentMethod =
 
 export type UrgencyLevel = 'Oddiy' | 'Shoshilinch (Bugun)';
 
+export type LoadType = 'tolik_mashina' | 'yigma_yuk';
+
 export interface LocationPoint {
   city: string;
   district?: string;
@@ -44,13 +46,16 @@ export interface CargoItem {
   ownerTelegram?: string;
   title: string;
   category: CargoCategory;
+  loadType?: LoadType; // To'liq mashina (FTL) yoki Yig'ma / Poputniy yuk (LTL)
   imageUrl: string;
   weightKg: number;
   volumeM3: number;
   pickupLocation: LocationPoint;
   deliveryLocation: LocationPoint;
   pickupDate: string;
+  pickupTimeWindow?: string; // e.g. "08:00 - 12:00 (Ertalab)"
   deliveryDate: string;
+  deliveryTimeWindow?: string; // e.g. "Ertasi kuni 18:00 gacha"
   priceUzs: number;
   paymentMethod: PaymentMethod;
   urgency: UrgencyLevel;
@@ -117,6 +122,7 @@ export interface Order {
   cargoId: string;
   cargoTitle: string;
   category: CargoCategory;
+  loadType?: LoadType; // To'liq mashina (FTL) yoki Yig'ma yuk (LTL)
   weightKg: number;
   volumeM3: number;
   paymentMethod: PaymentMethod;
@@ -137,7 +143,9 @@ export interface Order {
   pickupLocation: LocationPoint;
   deliveryLocation: LocationPoint;
   pickupDate: string;
+  pickupTimeWindow?: string;
   deliveryDate: string;
+  deliveryTimeWindow?: string;
   agreedPriceUzs: number;
   distanceKm: number;
   durationMinutes: number;
@@ -152,6 +160,36 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
   completedAt?: string;
+}
+
+export interface CarrierTripAd {
+  id: string;
+  driverId: string;
+  driverName: string;
+  driverPhone: string;
+  driverTelegram?: string;
+  driverRating: number;
+  vehicleModel: string;
+  vehiclePlate: string;
+  transportType: TransportType;
+  totalCapacityTon: number;
+  availableCapacityTon: number; // Qolgan bo'sh tonna
+  totalVolumeM3: number;
+  availableVolumeM3: number;    // Qolgan bo'sh m³
+  departureLocation: LocationPoint;
+  destinationLocation: LocationPoint;
+  departureDate: string;
+  departureTimeWindow: string; // Masalan: "08:00 - 12:00"
+  deliveryDate: string;
+  deliveryTimeWindow: string;  // Masalan: "Ertasi kuni 18:00 gacha"
+  pricePerTonUzs?: number;
+  totalTripPriceUzs?: number;
+  isConsolidated: boolean;     // Yig'ma yuk (bir nechta kishi yukini olish) ruxsati
+  maxShippersCount: number;    // Masalan: 5 kishigacha yuk qabul qilish
+  currentShippersCount: number; // Hozir nechta yuk olingan
+  specialNotes?: string;
+  createdAt: string;
+  status: 'faol' | 'yolda' | 'yakunlandi';
 }
 
 export interface ChatMessage {

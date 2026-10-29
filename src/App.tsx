@@ -22,6 +22,7 @@ import { ProfileScreen } from './screens/ProfileScreen';
 
 // Modals
 import { PostCargoModal } from './screens/PostCargoModal';
+import { PostTripModal } from './screens/PostTripModal';
 import { CargoDetailModal } from './screens/CargoDetailModal';
 import { OrderTrackingScreen } from './screens/OrderTrackingScreen';
 import { ChatScreen } from './screens/ChatScreen';
@@ -47,6 +48,7 @@ export default function App() {
 
   // Modals & Active Views
   const [showPostCargoModal, setShowPostCargoModal] = useState(false);
+  const [showPostTripModal, setShowPostTripModal] = useState(false);
   const [selectedCargoForDetail, setSelectedCargoForDetail] = useState<CargoItem | null>(null);
   const [detailPickupDistanceKm, setDetailPickupDistanceKm] = useState<number | undefined>(undefined);
   const [activeOrderForTracking, setActiveOrderForTracking] = useState<Order | null>(null);
@@ -106,6 +108,11 @@ export default function App() {
         setShowVehicleModal(false);
         return;
       }
+      // 6.5-daraja: Agar bo'sh reys (poputniy) modal oynasi ochiq bo'lsa
+      if (showPostTripModal) {
+        setShowPostTripModal(false);
+        return;
+      }
       // 7-daraja: Agar yuk e'lon qilish modal oynasi ochiq bo'lsa
       if (showPostCargoModal) {
         setShowPostCargoModal(false);
@@ -162,6 +169,7 @@ export default function App() {
     showNotificationsModal,
     showVehicleModal,
     showPostCargoModal,
+    showPostTripModal,
     selectedCargoForDetail,
     activeChatOrderId,
     activeOrderForTracking,
@@ -324,6 +332,7 @@ export default function App() {
                 }}
                 onOpenVehicleSettings={() => setShowVehicleModal(true)}
                 onOpenCalculator={handleOpenCalculator}
+                onOpenPostTrip={() => setShowPostTripModal(true)}
               />
             )}
 
@@ -369,6 +378,7 @@ export default function App() {
           onTabChange={(tab) => setCurrentTab(tab)}
           onOpenPostCargo={() => setShowPostCargoModal(true)}
           onOpenVehicleModal={() => setShowVehicleModal(true)}
+          onOpenPostTrip={() => setShowPostTripModal(true)}
           activeOrdersCount={activeOrders.length}
         />
       )}
@@ -380,6 +390,26 @@ export default function App() {
         isOpen={showPostCargoModal}
         onClose={() => setShowPostCargoModal(false)}
         onSubmit={handlePostCargo}
+      />
+
+      {/* 1.5. Post Carrier Trip Modal (Yuk tashuvchi bo'sh mashina / poputniy reys) */}
+      <PostTripModal
+        isOpen={showPostTripModal}
+        onClose={() => setShowPostTripModal(false)}
+        vehicle={profile.vehicle}
+        onSubmit={(tripData) => {
+          storageService.addCarrierTrip({
+            ...tripData,
+            driverId: profile.id,
+            driverName: profile.fullName,
+            driverPhone: profile.phone,
+            driverRating: profile.rating,
+            vehicleModel: profile.vehicle?.model || 'Yuk mashinasi',
+            vehiclePlate: profile.vehicle?.plateNumber || "01 A 000 AA",
+            transportType: profile.vehicle?.transportType || 'Isuzu (Bortli)'
+          });
+          refreshState();
+        }}
       />
 
       {/* 2. Cargo Detail & Bidding Modal */}

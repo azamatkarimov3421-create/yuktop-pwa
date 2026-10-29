@@ -126,7 +126,7 @@ export const locationService = {
       }
     }
 
-    // 6-QADAM: Agar koordinata topilgan bo'lsa, O'zbekistonning eng yaqin shahrini hisoblash
+    // 6-QADAM: Agar koordinata topilgan bo'lsa, O'zbekistonning aniq manzili va shahrini aniqlash
     if (lat !== null && lng !== null) {
       let closest = UZBEKISTAN_CITIES[0];
       let minDistance = calculateDirectDistanceKm(lat, lng, closest.lat, closest.lng);
@@ -139,10 +139,47 @@ export const locationService = {
         }
       }
 
+      let exactAddress = `${closest.city} (GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+      let exactDistrict = closest.district || 'Markaziy hudud';
+      let exactCity = closest.city;
+
+      // Real Reverse Geocoding via OpenStreetMap Nominatim (tezkor 2 soniyali timeout bilan)
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 2000);
+        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16&addressdetails=1`;
+        const res = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'Accept-Language': 'uz,ru,en',
+            'User-Agent': 'YuktopUzbekistanLogistics/2.0'
+          }
+        });
+        clearTimeout(timer);
+
+        if (res.ok) {
+          const data = await res.json();
+          const addr = data.address || {};
+          const road = addr.road || addr.street || addr.pedestrian || '';
+          const suburb = addr.suburb || addr.neighbourhood || addr.city_district || addr.county || '';
+          const city = addr.city || addr.town || addr.state || closest.city;
+          
+          if (suburb) exactDistrict = suburb;
+          if (city) exactCity = city;
+          
+          const parts = [road, suburb, city].filter(Boolean);
+          if (parts.length > 0) {
+            exactAddress = parts.join(', ');
+          }
+        }
+      } catch {
+        // Tarmoq sekin bo'lsa yoki oflayn bo'lsa, eng yaqin shahar ishlatiladi
+      }
+
       const point: LocationPoint = {
-        city: closest.city,
-        district: closest.district || 'Markaziy hudud',
-        address: `${closest.city} (GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)})`,
+        city: exactCity,
+        district: exactDistrict,
+        address: exactAddress,
         lat: Number(lat.toFixed(6)),
         lng: Number(lng.toFixed(6))
       };
@@ -152,7 +189,7 @@ export const locationService = {
         accuracyMeters: accuracy,
         isGps: provider === 'gps_fine' || provider === 'network_coarse',
         provider,
-        message: provider === 'ip' ? "Tarmoq orqali taxminiy shahar aniqlandi" : undefined
+        message: provider === 'ip' ? "Tarmoq orqali taxminiy shahar aniqlandi" : `Aniqlandi: ${exactAddress}`
       };
     }
 

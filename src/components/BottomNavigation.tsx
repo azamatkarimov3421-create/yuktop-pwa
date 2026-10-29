@@ -18,6 +18,7 @@ interface BottomNavigationProps {
   onTabChange: (tab: MainTab) => void;
   onOpenPostCargo: () => void;
   onOpenVehicleModal?: () => void;
+  onOpenPostTrip?: () => void;
   activeOrdersCount: number;
 }
 
@@ -27,6 +28,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   onTabChange,
   onOpenPostCargo,
   onOpenVehicleModal,
+  onOpenPostTrip,
   activeOrdersCount
 }) => {
   return (
@@ -99,11 +101,11 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             ) : (
               <button
                 type="button"
-                onClick={() => onOpenVehicleModal ? onOpenVehicleModal() : onTabChange('profile')}
+                onClick={() => onOpenPostTrip ? onOpenPostTrip() : onOpenVehicleModal ? onOpenVehicleModal() : onTabChange('profile')}
                 className="w-11 h-11 xs:w-12 xs:h-12 rounded-full bg-gradient-to-tr from-sky-600 via-teal-700 to-teal-800 text-white flex items-center justify-center shadow-lg shadow-sky-700/35 active:scale-90 transition-transform -my-2 ring-4 ring-white/90 shrink-0 border border-white/40"
-                title="Transport va marshrut sozlamalari"
+                title="Reys / Bo'sh joy e'lon qilish"
               >
-                <Truck className="w-5 h-5 stroke-[2.2]" />
+                <Plus className="w-5 h-5 xs:w-6 xs:h-6 stroke-[2.5]" />
               </button>
             )}
           </div>
