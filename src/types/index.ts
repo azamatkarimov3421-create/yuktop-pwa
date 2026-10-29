@@ -52,6 +52,7 @@ export interface CargoItem {
   volumeM3: number;
   pickupLocation: LocationPoint;
   deliveryLocation: LocationPoint;
+  stops?: LocationPoint[]; // 1 yuk uchun 2-3 ta manzil (Oraliq tushirish / yuklash nuqtalari)
   pickupDate: string;
   pickupTimeWindow?: string; // e.g. "08:00 - 12:00 (Ertalab)"
   deliveryDate: string;
@@ -142,6 +143,7 @@ export interface Order {
   transportType: TransportType;
   pickupLocation: LocationPoint;
   deliveryLocation: LocationPoint;
+  stops?: LocationPoint[]; // 1 yuk uchun 2-3 ta manzil (Oraliq tushirish / yuklash nuqtalari)
   pickupDate: string;
   pickupTimeWindow?: string;
   deliveryDate: string;

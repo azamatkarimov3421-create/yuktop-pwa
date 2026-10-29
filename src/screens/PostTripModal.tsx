@@ -368,7 +368,7 @@ export const PostTripModal: React.FC<PostTripModalProps> = ({
             <MapPicker
               initialPointA={pointA}
               initialPointB={pointB}
-              onPointsSelected={(a, b, route) => {
+              onPointsSelected={(a, b, _c, route) => {
                 setPointA(a);
                 setPointB(b);
                 setRouteData(route);

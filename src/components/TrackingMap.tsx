@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Order } from '../types';
-import { getRoute, formatDurationUz } from '../services/routingService';
+import { getRoute, getMultiPointRoute, formatDurationUz } from '../services/routingService';
 import { Truck, Navigation, ShieldCheck, Activity } from 'lucide-react';
 
 interface TrackingMapProps {
@@ -114,15 +114,25 @@ export const TrackingMap: React.FC<TrackingMapProps> = ({
 
     mapInstanceRef.current = map;
 
-    const markerA = L.marker([order.pickupLocation.lat, order.pickupLocation.lng], {
-      icon: createPinIcon('A', '#0D9488')
-    }).addTo(map);
-    markerA.bindTooltip(`<b>Yuklash joyi:</b><br/>${order.pickupLocation.city}`);
+    const stops = order.stops && order.stops.length >= 2 
+      ? order.stops 
+      : [order.pickupLocation, order.deliveryLocation];
 
-    const markerB = L.marker([order.deliveryLocation.lat, order.deliveryLocation.lng], {
-      icon: createPinIcon('B', '#E11D48')
-    }).addTo(map);
-    markerB.bindTooltip(`<b>Yetkazish manzili:</b><br/>${order.deliveryLocation.city}`);
+    const pinColors = ['#0D9488', '#F59E0B', '#E11D48'];
+    const pinLabels = ['A', 'B', 'C', 'D'];
+
+    stops.forEach((stop, idx) => {
+      const isFirst = idx === 0;
+      const isLast = idx === stops.length - 1;
+      const label = pinLabels[idx] || `${idx + 1}`;
+      const color = isFirst ? '#0D9488' : isLast ? '#E11D48' : '#F59E0B';
+      const roleText = isFirst ? '1. Yuk ortish joyi' : isLast ? `${idx + 1}. Yakuniy manzil` : `${idx + 1}. Oraliq manzil`;
+
+      const m = L.marker([stop.lat, stop.lng], {
+        icon: createPinIcon(label, color)
+      }).addTo(map);
+      m.bindTooltip(`<b>${roleText}:</b><br/>${stop.city} (${stop.address})`);
+    });
 
     const truckMarker = L.marker(
       [order.driverCurrentLocation.lat, order.driverCurrentLocation.lng],
@@ -131,7 +141,7 @@ export const TrackingMap: React.FC<TrackingMapProps> = ({
     truckMarker.bindTooltip(`<b>${order.driverName}</b><br/>${order.vehicleModel}`);
     truckMarkerRef.current = truckMarker;
 
-    getRoute(order.pickupLocation, order.deliveryLocation).then(route => {
+    getMultiPointRoute(stops).then(route => {
       if (route.coordinates.length > 0) {
         setRouteCoordinates(route.coordinates);
         const polyline = L.polyline(route.coordinates, {
@@ -141,11 +151,9 @@ export const TrackingMap: React.FC<TrackingMapProps> = ({
         }).addTo(map);
         polylineRef.current = polyline;
 
-        const bounds = L.latLngBounds([
-          [order.pickupLocation.lat, order.pickupLocation.lng],
-          [order.deliveryLocation.lat, order.deliveryLocation.lng],
-          [order.driverCurrentLocation.lat, order.driverCurrentLocation.lng]
-        ]);
+        const allLatLngs: [number, number][] = stops.map(s => [s.lat, s.lng] as [number, number]);
+        allLatLngs.push([order.driverCurrentLocation.lat, order.driverCurrentLocation.lng]);
+        const bounds = L.latLngBounds(allLatLngs);
         map.fitBounds(bounds, { padding: [35, 35] });
       }
     });

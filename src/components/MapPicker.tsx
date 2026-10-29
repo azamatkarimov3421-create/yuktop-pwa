@@ -3,14 +3,15 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { LocationPoint, RouteGeometry } from '../types';
 import { UZBEKISTAN_CITIES } from '../data/uzbekistanLocations';
-import { getRoute, formatDurationUz } from '../services/routingService';
+import { getRoute, getMultiPointRoute, formatDurationUz } from '../services/routingService';
 import { locationService } from '../services/locationService';
 import { Crosshair, Loader2 } from 'lucide-react';
 
 interface MapPickerProps {
   initialPointA?: LocationPoint;
   initialPointB?: LocationPoint;
-  onPointsSelected?: (pointA: LocationPoint, pointB: LocationPoint, route: RouteGeometry) => void;
+  initialPointC?: LocationPoint | null;
+  onPointsSelected?: (pointA: LocationPoint, pointB: LocationPoint, pointC: LocationPoint | null, route: RouteGeometry) => void;
   readOnly?: boolean;
   routeToShow?: RouteGeometry;
 }
@@ -18,6 +19,7 @@ interface MapPickerProps {
 export const MapPicker: React.FC<MapPickerProps> = ({
   initialPointA = UZBEKISTAN_CITIES[0], // Toshkent
   initialPointB = UZBEKISTAN_CITIES[3], // Samarqand
+  initialPointC = null,
   onPointsSelected,
   readOnly = false,
   routeToShow
@@ -26,19 +28,21 @@ export const MapPicker: React.FC<MapPickerProps> = ({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerARef = useRef<L.Marker | null>(null);
   const markerBRef = useRef<L.Marker | null>(null);
+  const markerCRef = useRef<L.Marker | null>(null);
   const polylineRef = useRef<L.Polyline | null>(null);
 
   const [pointA, setPointA] = useState<LocationPoint>(initialPointA);
   const [pointB, setPointB] = useState<LocationPoint>(initialPointB);
-  const [activeSelectMode, setActiveSelectMode] = useState<'A' | 'B'>('A');
-  const activeSelectModeRef = useRef<'A' | 'B'>('A');
+  const [pointC, setPointC] = useState<LocationPoint | null>(initialPointC);
+
+  const [activeSelectMode, setActiveSelectMode] = useState<'A' | 'B' | 'C'>('A');
+  const activeSelectModeRef = useRef<'A' | 'B' | 'C'>('A');
   activeSelectModeRef.current = activeSelectMode;
 
   const [routeInfo, setRouteInfo] = useState<RouteGeometry | null>(routeToShow || null);
   const [isLocatingGps, setIsLocatingGps] = useState(false);
   const [gpsStatusText, setGpsStatusText] = useState<string | null>(null);
 
-  // Sync with prop updates smoothly
   useEffect(() => {
     if (initialPointA && (initialPointA.lat !== pointA.lat || initialPointA.lng !== pointA.lng)) {
       setPointA(initialPointA);
@@ -51,7 +55,11 @@ export const MapPicker: React.FC<MapPickerProps> = ({
     }
   }, [initialPointB.lat, initialPointB.lng, initialPointB.city]);
 
-  const createCustomIcon = (label: 'A' | 'B', color: string) => {
+  useEffect(() => {
+    setPointC(initialPointC || null);
+  }, [initialPointC?.lat, initialPointC?.lng, initialPointC?.city]);
+
+  const createCustomIcon = (label: string, color: string) => {
     return L.divIcon({
       className: 'custom-map-marker',
       html: `
@@ -81,7 +89,7 @@ export const MapPicker: React.FC<MapPickerProps> = ({
     });
   };
 
-  // Initialize Map ONCE (Never teardown on mode switch)
+  // Initialize Map ONCE
   useEffect(() => {
     if (!mapContainerRef.current) return;
     if (mapInstanceRef.current) return;
@@ -104,7 +112,6 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
     mapInstanceRef.current = map;
 
-    // Smooth resize check
     requestAnimationFrame(() => {
       map.invalidateSize();
     });
@@ -132,8 +139,10 @@ export const MapPicker: React.FC<MapPickerProps> = ({
         if (activeSelectModeRef.current === 'A') {
           setPointA(newPoint);
           setActiveSelectMode('B');
-        } else {
+        } else if (activeSelectModeRef.current === 'B') {
           setPointB(newPoint);
+        } else if (activeSelectModeRef.current === 'C') {
+          setPointC(newPoint);
         }
       });
     }
@@ -151,13 +160,15 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
     if (markerARef.current) map.removeLayer(markerARef.current);
     if (markerBRef.current) map.removeLayer(markerBRef.current);
+    if (markerCRef.current) map.removeLayer(markerCRef.current);
     if (polylineRef.current) map.removeLayer(polylineRef.current);
 
+    // Marker A (Yuklash)
     const markerA = L.marker([pointA.lat, pointA.lng], {
       icon: createCustomIcon('A', '#0D9488'),
       draggable: !readOnly
     }).addTo(map);
-    markerA.bindTooltip(`<b>Yuklash (A):</b> ${pointA.city}`);
+    markerA.bindTooltip(`<b>1. Yuklash joyi (A):</b> ${pointA.city}`);
     markerARef.current = markerA;
 
     if (!readOnly) {
@@ -167,11 +178,13 @@ export const MapPicker: React.FC<MapPickerProps> = ({
       });
     }
 
+    // Marker B (1-Tushirish)
+    const bColor = pointC ? '#F59E0B' : '#E11D48';
     const markerB = L.marker([pointB.lat, pointB.lng], {
-      icon: createCustomIcon('B', '#E11D48'),
+      icon: createCustomIcon('B', bColor),
       draggable: !readOnly
     }).addTo(map);
-    markerB.bindTooltip(`<b>Yetkazish (B):</b> ${pointB.city}`);
+    markerB.bindTooltip(`<b>${pointC ? '2. 1-Tushirish joyi (B)' : '2. Yetkazish manzili (B)'}:</b> ${pointB.city}`);
     markerBRef.current = markerB;
 
     if (!readOnly) {
@@ -181,9 +194,27 @@ export const MapPicker: React.FC<MapPickerProps> = ({
       });
     }
 
+    // Marker C (2-Tushirish agar mavjud bo'lsa)
+    if (pointC) {
+      const markerC = L.marker([pointC.lat, pointC.lng], {
+        icon: createCustomIcon('C', '#E11D48'),
+        draggable: !readOnly
+      }).addTo(map);
+      markerC.bindTooltip(`<b>3. Yakuniy tushirish joyi (C):</b> ${pointC.city}`);
+      markerCRef.current = markerC;
+
+      if (!readOnly) {
+        markerC.on('dragend', (e) => {
+          const pos = e.target.getLatLng();
+          setPointC(prev => prev ? ({ ...prev, lat: pos.lat, lng: pos.lng }) : null);
+        });
+      }
+    }
+
     let isCancelled = false;
     const fetchRouteData = async () => {
-      const route = await getRoute(pointA, pointB);
+      const stops = pointC ? [pointA, pointB, pointC] : [pointA, pointB];
+      const route = await getMultiPointRoute(stops);
       if (isCancelled) return;
 
       setRouteInfo(route);
@@ -198,18 +229,14 @@ export const MapPicker: React.FC<MapPickerProps> = ({
           lineCap: 'round',
           lineJoin: 'round'
         }).addTo(mapInstanceRef.current);
-
         polylineRef.current = polyline;
 
-        const bounds = L.latLngBounds([
-          [pointA.lat, pointA.lng],
-          [pointB.lat, pointB.lng]
-        ]);
-        mapInstanceRef.current.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+        const bounds = L.latLngBounds(route.coordinates);
+        mapInstanceRef.current.fitBounds(bounds, { padding: [30, 30] });
       }
 
       if (onPointsSelected) {
-        onPointsSelected(pointA, pointB, route);
+        onPointsSelected(pointA, pointB, pointC, route);
       }
     };
 
@@ -218,135 +245,116 @@ export const MapPicker: React.FC<MapPickerProps> = ({
     return () => {
       isCancelled = true;
     };
-  }, [pointA.lat, pointA.lng, pointB.lat, pointB.lng, readOnly]);
+  }, [pointA.lat, pointA.lng, pointB.lat, pointB.lng, pointC?.lat, pointC?.lng, readOnly]);
 
-  // GPS Locating Handler
-  const handleDetectGps = async () => {
+  const handleQuickGps = async () => {
     setIsLocatingGps(true);
-    setGpsStatusText("Joylashuv aniqlanmoqda...");
+    setGpsStatusText('Joylashuv aniqlanmoqda...');
     try {
       const res = await locationService.getCurrentLocation();
-      setPointA(res.point);
-      setGpsStatusText(res.isGps ? `GPS: ${res.point.city} (±${res.accuracyMeters}m)` : (res.message || res.point.city));
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.flyTo([res.point.lat, res.point.lng], 12, { duration: 1 });
+      if (activeSelectMode === 'A') {
+        setPointA(res.point);
+      } else if (activeSelectMode === 'B') {
+        setPointB(res.point);
+      } else if (activeSelectMode === 'C' && pointC) {
+        setPointC(res.point);
       }
-      setTimeout(() => setGpsStatusText(null), 5000);
+      setGpsStatusText(`Aniqlandi: ${res.point.city}`);
+      setTimeout(() => setGpsStatusText(null), 3000);
     } catch {
-      setGpsStatusText("Telefon GPS sozlamasini yoqing");
-      setTimeout(() => setGpsStatusText(null), 4000);
+      setGpsStatusText("GPS aniqlab bo'lmadi");
+      setTimeout(() => setGpsStatusText(null), 3000);
     } finally {
       setIsLocatingGps(false);
     }
   };
 
   return (
-    <div className="relative w-full rounded-[28px] overflow-hidden border border-white/85 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/72 backdrop-blur-xl">
-      {/* Route Info Badge */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex items-center justify-between gap-1.5 bg-white/85 backdrop-blur-xl p-2.5 rounded-2xl border border-white/80 shadow-md">
-        <div className="flex items-center gap-1.5 text-xs truncate">
-          <span className="w-2 h-2 rounded-full bg-teal-600 shrink-0" />
-          <span className="font-bold text-slate-800 text-[11px] truncate">{pointA.city.split(' ')[0]}</span>
-          <span className="text-slate-400">→</span>
-          <span className="w-2 h-2 rounded-full bg-rose-600 shrink-0" />
-          <span className="font-bold text-slate-800 text-[11px] truncate">{pointB.city.split(' ')[0]}</span>
+    <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xs bg-white">
+      {/* Route Summary Floating Badge */}
+      <div className="absolute top-2.5 left-2.5 right-2.5 z-[1000] flex items-center justify-between gap-1.5 p-2 rounded-xl bg-white/95 border border-slate-200 shadow-sm text-xs">
+        <div className="flex items-center gap-1.5 truncate">
+          <span className="w-2.5 h-2.5 rounded-full bg-teal-600 shrink-0" />
+          <span className="font-bold text-slate-800 truncate">{pointA.city}</span>
+          <span className="text-teal-600 font-extrabold">➔</span>
+          <span className="font-bold text-slate-800 truncate">{pointB.city}</span>
+          {pointC && (
+            <>
+              <span className="text-amber-600 font-extrabold">➔</span>
+              <span className="font-bold text-slate-800 truncate">{pointC.city}</span>
+            </>
+          )}
         </div>
 
         {routeInfo && (
-          <div className="flex items-center gap-1.5 text-[10px] shrink-0 font-bold">
-            <span className="px-2 py-0.5 bg-teal-500/15 text-teal-800 rounded-full border border-teal-200/80">
+          <div className="flex items-center gap-1 shrink-0 font-bold text-[11px]">
+            <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200">
               {routeInfo.distanceKm} km
             </span>
-            <span className="px-2 py-0.5 bg-sky-500/15 text-sky-800 rounded-full border border-sky-200/80">
+            <span className="text-slate-400 font-normal">
               {formatDurationUz(routeInfo.durationMinutes)}
             </span>
           </div>
         )}
       </div>
 
-      {/* Floating GPS Button */}
+      {/* Map container */}
+      <div ref={mapContainerRef} className="w-full h-56 xs:h-64 z-0 bg-slate-100" />
+
+      {/* Mode selection buttons on bottom of map */}
       {!readOnly && (
-        <div className="absolute bottom-20 left-3 z-[1000] flex items-center gap-2">
+        <div className="p-2.5 bg-white border-t border-slate-100 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setActiveSelectMode('A')}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                activeSelectMode === 'A'
+                  ? 'bg-teal-700 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              Nuqta A (Yuklash)
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveSelectMode('B')}
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                activeSelectMode === 'B'
+                  ? 'bg-amber-600 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              Nuqta B (Tushirish)
+            </button>
+            {pointC && (
+              <button
+                type="button"
+                onClick={() => setActiveSelectMode('C')}
+                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                  activeSelectMode === 'C'
+                    ? 'bg-rose-600 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Nuqta C (2-tushirish)
+              </button>
+            )}
+          </div>
+
           <button
             type="button"
-            onClick={handleDetectGps}
+            onClick={handleQuickGps}
             disabled={isLocatingGps}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xl border border-white/85 text-teal-700 hover:text-teal-900 font-extrabold text-[11px] shadow-lg active:scale-95 transition-all disabled:opacity-60"
-            title="Mening aniq GPS joylashuvim"
+            className="px-2.5 py-1 rounded-xl bg-teal-50 text-teal-800 border border-teal-200 font-bold text-xs flex items-center gap-1 hover:bg-teal-100"
           >
             {isLocatingGps ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
             ) : (
-              <Crosshair className="w-3.5 h-3.5 text-teal-600" />
+              <Crosshair className="w-3.5 h-3.5" />
             )}
-            <span>{isLocatingGps ? 'Aniqlanmoqda...' : '📍 Mening joylashuvim'}</span>
+            <span>{gpsStatusText || 'GPS'}</span>
           </button>
-
-          {gpsStatusText && (
-            <span className="px-2.5 py-1 rounded-full bg-slate-900/80 text-white text-[10px] font-bold backdrop-blur-md shadow-md animate-in fade-in">
-              {gpsStatusText}
-            </span>
-          )}
-        </div>
-      )}
-
-      <div ref={mapContainerRef} className="w-full h-64 sm:h-72 z-0 bg-slate-100" />
-
-      {!readOnly && (
-        <div className="p-3 bg-white/75 backdrop-blur-xl border-t border-white/70 space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-[11px] text-slate-500 font-medium">
-              Tanlash rejimi:
-            </span>
-            <div className="flex gap-1.5">
-              <button
-                type="button"
-                onClick={() => setActiveSelectMode('A')}
-                className={`px-3 py-1 text-[11px] font-bold rounded-full transition-all ${
-                  activeSelectMode === 'A'
-                    ? 'bg-teal-700 text-white shadow-xs'
-                    : 'bg-white/60 backdrop-blur-md text-slate-700 border border-white/80 hover:bg-white/90'
-                }`}
-              >
-                A Nuqta (Yuklash)
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveSelectMode('B')}
-                className={`px-3 py-1 text-[11px] font-bold rounded-full transition-all ${
-                  activeSelectMode === 'B'
-                    ? 'bg-rose-600 text-white shadow-xs'
-                    : 'bg-white/60 backdrop-blur-md text-slate-700 border border-white/80 hover:bg-white/90'
-                }`}
-              >
-                B Nuqta (Yetkazish)
-              </button>
-            </div>
-          </div>
-
-          {/* Quick city pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 scrollbar-none text-[11px]">
-            {UZBEKISTAN_CITIES.slice(0, 8).map((city) => (
-              <button
-                key={city.city + city.district}
-                type="button"
-                onClick={() => {
-                  if (activeSelectMode === 'A') {
-                    setPointA(city);
-                    setActiveSelectMode('B');
-                  } else {
-                    setPointB(city);
-                  }
-                  if (mapInstanceRef.current) {
-                    mapInstanceRef.current.flyTo([city.lat, city.lng], 10, { duration: 0.8 });
-                  }
-                }}
-                className="px-3 py-1 shrink-0 rounded-full bg-white/60 backdrop-blur-md border border-white/80 text-slate-700 hover:bg-white/95 hover:text-teal-800 transition-colors active:scale-95 font-medium shadow-2xs"
-              >
-                {city.city.replace(' shahri', '')}
-              </button>
-            ))}
-          </div>
         </div>
       )}
     </div>

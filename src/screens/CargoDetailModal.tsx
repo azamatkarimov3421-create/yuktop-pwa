@@ -24,7 +24,8 @@ import {
   Banknote,
   Calculator,
   ExternalLink,
-  ArrowLeft
+  ArrowLeft,
+  Navigation
 } from 'lucide-react';
 
 interface CargoDetailModalProps {
@@ -184,48 +185,105 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
           <div className="space-y-1.5">
             <div className="flex items-center justify-between px-1">
               <span className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">
-                Yo'nalish va Marshrut
+                Yo'nalish va Marshrut {cargo.stops && cargo.stops.length > 2 ? `(${cargo.stops.length} ta manzil)` : ''}
               </span>
               <span className="text-[11px] font-semibold text-slate-600">
                 {cargo.distanceKm} km • {formatDurationUz(cargo.durationMinutes)}
               </span>
             </div>
             <MapPicker
-              initialPointA={cargo.pickupLocation}
-              initialPointB={cargo.deliveryLocation}
+              initialPointA={cargo.stops?.[0] || cargo.pickupLocation}
+              initialPointB={cargo.stops?.[1] || cargo.deliveryLocation}
+              initialPointC={cargo.stops && cargo.stops.length > 2 ? cargo.stops[2] : null}
               readOnly={true}
             />
+
+            {/* Yandex Navigatsiyada ochish tugmasi */}
+            <div className="pt-1">
+              <a
+                href={
+                  cargo.stops && cargo.stops.length > 2
+                    ? `https://yandex.ru/maps/?rtext=${cargo.stops.map(s => `${s.lat},${s.lng}`).join('~')}&rtt=auto`
+                    : `https://yandex.ru/maps/?rtext=${cargo.pickupLocation.lat},${cargo.pickupLocation.lng}~${cargo.deliveryLocation.lat},${cargo.deliveryLocation.lng}&rtt=auto`
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-2.5 px-3 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-300/80 text-amber-900 text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-[0.99]"
+              >
+                <Navigation className="w-3.5 h-3.5 text-amber-700" />
+                <span>🧭 Yandex Navigatorda yo'lni ochish</span>
+                <ExternalLink className="w-3 h-3 text-amber-600" />
+              </a>
+            </div>
           </div>
 
           {/* Route Details Box */}
           <div className="p-3.5 bg-white/60 backdrop-blur-md rounded-2xl border border-white/80 space-y-2 text-xs">
-            <div className="flex items-start gap-2">
-              <span className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                A
-              </span>
-              <div className="flex-1">
-                <div className="font-bold text-slate-800">{cargo.pickupLocation.city}</div>
-                <div className="text-slate-400 text-[10px]">{cargo.pickupLocation.address}</div>
-                <div className="text-teal-700 font-semibold text-[10px] mt-0.5">
-                  Yuklash: {cargo.pickupDate}
+            {cargo.stops && cargo.stops.length > 2 ? (
+              // Multi-stop 3 ta manzil ko'rinishi
+              <div className="space-y-2.5">
+                {cargo.stops.map((stop, idx) => {
+                  const letter = idx === 0 ? 'A' : idx === 1 ? 'B' : 'C';
+                  const badgeBg = idx === 0 ? 'bg-teal-600' : idx === 1 ? 'bg-amber-500' : 'bg-rose-600';
+                  const label = idx === 0 ? 'Yuklash nuqtasi' : idx === 1 ? '1-Tushirish manzili' : '2-Tushirish (Yakuniy)';
+                  return (
+                    <div key={idx} className="flex items-start gap-2.5">
+                      <span className={`w-5 h-5 rounded-full ${badgeBg} text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5`}>
+                        {letter}
+                      </span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-slate-800">{stop.city}</span>
+                          <span className="text-[10px] text-slate-400 font-medium">({label})</span>
+                        </div>
+                        <div className="text-slate-500 text-[10px]">{stop.address || "Aniq manzil belgilanmagan"}</div>
+                        {idx === 0 && (
+                          <div className="text-teal-700 font-semibold text-[10px] mt-0.5">
+                            Yuklash: {cargo.pickupDate} {cargo.pickupTimeWindow ? `(${cargo.pickupTimeWindow})` : ''}
+                          </div>
+                        )}
+                        {idx === cargo.stops!.length - 1 && (
+                          <div className="text-rose-700 font-semibold text-[10px] mt-0.5">
+                            Yetkazish: {cargo.deliveryDate} {cargo.deliveryTimeWindow ? `(${cargo.deliveryTimeWindow})` : ''}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              // 2 ta manzil (A va B)
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                    A
+                  </span>
+                  <div className="flex-1">
+                    <div className="font-bold text-slate-800">{cargo.pickupLocation.city}</div>
+                    <div className="text-slate-400 text-[10px]">{cargo.pickupLocation.address}</div>
+                    <div className="text-teal-700 font-semibold text-[10px] mt-0.5">
+                      Yuklash: {cargo.pickupDate} {cargo.pickupTimeWindow ? `(${cargo.pickupTimeWindow})` : ''}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200/60 my-1" />
+
+                <div className="flex items-start gap-2">
+                  <span className="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                    B
+                  </span>
+                  <div className="flex-1">
+                    <div className="font-bold text-slate-800">{cargo.deliveryLocation.city}</div>
+                    <div className="text-slate-400 text-[10px]">{cargo.deliveryLocation.address}</div>
+                    <div className="text-rose-700 font-semibold text-[10px] mt-0.5">
+                      Yetkazish: {cargo.deliveryDate} {cargo.deliveryTimeWindow ? `(${cargo.deliveryTimeWindow})` : ''}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="border-t border-slate-200/60 my-1" />
-
-            <div className="flex items-start gap-2">
-              <span className="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
-                B
-              </span>
-              <div className="flex-1">
-                <div className="font-bold text-slate-800">{cargo.deliveryLocation.city}</div>
-                <div className="text-slate-400 text-[10px]">{cargo.deliveryLocation.address}</div>
-                <div className="text-rose-700 font-semibold text-[10px] mt-0.5">
-                  Yetkazish: {cargo.deliveryDate}
-                </div>
-              </div>
-            </div>
+            )}
 
             {cargo.specialNotes && (
               <div className="mt-2 pt-2 border-t border-slate-200/60 text-slate-600 text-[11px]">

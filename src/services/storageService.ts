@@ -366,6 +366,7 @@ class StorageService {
       transportType: bid.transportType,
       pickupLocation: cargo.pickupLocation,
       deliveryLocation: cargo.deliveryLocation,
+      stops: cargo.stops,
       pickupDate: cargo.pickupDate,
       pickupTimeWindow: cargo.pickupTimeWindow,
       deliveryDate: cargo.deliveryDate,

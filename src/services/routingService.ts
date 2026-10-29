@@ -75,6 +75,66 @@ export async function getRoute(pointA: LocationPoint, pointB: LocationPoint): Pr
 }
 
 /**
+ * 1 yuk uchun 2-3 ta manzil (Multi-stop) bo'yicha to'liq avtomobil yo'li va masofani hisoblash
+ */
+export async function getMultiPointRoute(points: LocationPoint[]): Promise<RouteGeometry> {
+  if (!points || points.length === 0) {
+    return { coordinates: [], distanceKm: 0, durationMinutes: 0 };
+  }
+  if (points.length === 1) {
+    return { coordinates: [[points[0].lat, points[0].lng]], distanceKm: 0, durationMinutes: 0 };
+  }
+  if (points.length === 2) {
+    return getRoute(points[0], points[1]);
+  }
+
+  // 3 yoki undan ortiq nuqtalar uchun OSRM multi-stop marshruti
+  try {
+    const coordsStr = points.map(p => `${p.lng},${p.lat}`).join(';');
+    const url = `https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.routes && data.routes.length > 0) {
+        const route = data.routes[0];
+        const coordinates: [number, number][] = route.geometry.coordinates.map(
+          ([lng, lat]: [number, number]) => [lat, lng]
+        );
+        return {
+          coordinates,
+          distanceKm: Math.round((route.distance / 1000) * 10) / 10,
+          durationMinutes: Math.round(route.duration / 60)
+        };
+      }
+    }
+  } catch {
+    // Fallback
+  }
+
+  // Fallback: segmentma-segment bog'lash
+  let totalDist = 0;
+  let totalDur = 0;
+  let allCoords: [number, number][] = [];
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const segment = await getRoute(points[i], points[i + 1]);
+    totalDist += segment.distanceKm;
+    totalDur += segment.durationMinutes;
+    allCoords = allCoords.concat(segment.coordinates);
+  }
+
+  return {
+    coordinates: allCoords,
+    distanceKm: Math.round(totalDist),
+    durationMinutes: Math.round(totalDur)
+  };
+}
+
+/**
  * Modern Smart Price Estimation for Uzbekistan Freight Market
  */
 export function calculateRecommendedPrice(

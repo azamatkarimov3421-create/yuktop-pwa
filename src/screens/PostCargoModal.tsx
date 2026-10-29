@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CargoCategory, LocationPoint, RouteGeometry, PaymentMethod, UrgencyLevel } from '../types';
 import { UZBEKISTAN_CITIES, CARGO_PRESET_IMAGES } from '../data/uzbekistanLocations';
 import { MapPicker } from '../components/MapPicker';
-import { calculateRecommendedPrice, formatMoneyUz, getRoute } from '../services/routingService';
+import { calculateRecommendedPrice, formatMoneyUz, getRoute, getMultiPointRoute } from '../services/routingService';
 import { locationService } from '../services/locationService';
 import { 
   X, 
@@ -23,7 +23,8 @@ import {
   ArrowLeft,
   Crosshair,
   Loader2,
-  Navigation
+  Navigation,
+  Plus
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -39,6 +40,7 @@ interface PostCargoModalProps {
     volumeM3: number;
     pickupLocation: LocationPoint;
     deliveryLocation: LocationPoint;
+    stops?: LocationPoint[];
     pickupDate: string;
     pickupTimeWindow: string;
     deliveryDate: string;
@@ -81,6 +83,7 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
 
   const [pointA, setPointA] = useState<LocationPoint>(UZBEKISTAN_CITIES[0]); // Toshkent
   const [pointB, setPointB] = useState<LocationPoint>(UZBEKISTAN_CITIES[3]); // Samarqand
+  const [pointC, setPointC] = useState<LocationPoint | null>(null); // 3-manzil (Oraliq/yakuniy tushirish)
   const [routeData, setRouteData] = useState<RouteGeometry>({
     coordinates: [],
     distanceKm: 315,
@@ -106,7 +109,8 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
       } else {
         setGpsSuccessMessage(`Belgilandi: ${res.point.city}`);
       }
-      const newRoute = await getRoute(res.point, pointB);
+      const points = pointC ? [res.point, pointB, pointC] : [res.point, pointB];
+      const newRoute = await getMultiPointRoute(points);
       setRouteData(newRoute);
       setTimeout(() => setGpsSuccessMessage(''), 8000);
     } catch {
@@ -155,6 +159,8 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
       origin: { y: 0.6 }
     });
 
+    const stops: LocationPoint[] = pointC ? [pointA, pointB, pointC] : [pointA, pointB];
+
     onSubmit({
       title: title.trim(),
       category,
@@ -163,7 +169,8 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
       weightKg: Math.round(weight * 1000),
       volumeM3: parseFloat(volumeM3) || 20,
       pickupLocation: pointA,
-      deliveryLocation: pointB,
+      deliveryLocation: pointC || pointB,
+      stops,
       pickupDate,
       pickupTimeWindow,
       deliveryDate,
@@ -452,12 +459,146 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
               </button>
             </div>
 
+            {/* Shaharlar va manzillarni aniq tanlash */}
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2.5">
+              {/* Point A */}
+              <div className="p-2.5 bg-white/70 border border-slate-200/80 rounded-2xl space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                    A
+                  </span>
+                  <span className="text-[11px] font-bold text-slate-800">Yuklash manzili</span>
+                </div>
+                <select
+                  value={pointA.city}
+                  onChange={async (e) => {
+                    const found = UZBEKISTAN_CITIES.find(c => c.city === e.target.value) || pointA;
+                    setPointA(found);
+                    const pts = pointC ? [found, pointB, pointC] : [found, pointB];
+                    const r = await getMultiPointRoute(pts);
+                    setRouteData(r);
+                  }}
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-600"
+                >
+                  {UZBEKISTAN_CITIES.map(c => (
+                    <option key={c.city} value={c.city}>{c.city} ({c.district})</option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  value={pointA.address}
+                  onChange={(e) => setPointA({ ...pointA, address: e.target.value })}
+                  placeholder="Ombor / Ko'cha / Mo'ljal"
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-teal-600"
+                />
+              </div>
+
+              {/* Point B */}
+              <div className="p-2.5 bg-white/70 border border-slate-200/80 rounded-2xl space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                    B
+                  </span>
+                  <span className="text-[11px] font-bold text-slate-800">1-Tushirish manzili</span>
+                </div>
+                <select
+                  value={pointB.city}
+                  onChange={async (e) => {
+                    const found = UZBEKISTAN_CITIES.find(c => c.city === e.target.value) || pointB;
+                    setPointB(found);
+                    const pts = pointC ? [pointA, found, pointC] : [pointA, found];
+                    const r = await getMultiPointRoute(pts);
+                    setRouteData(r);
+                  }}
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-600"
+                >
+                  {UZBEKISTAN_CITIES.map(c => (
+                    <option key={c.city} value={c.city}>{c.city} ({c.district})</option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  value={pointB.address}
+                  onChange={(e) => setPointB({ ...pointB, address: e.target.value })}
+                  placeholder="Ombor / Do'kon / Mo'ljal"
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-teal-600"
+                />
+              </div>
+            </div>
+
+            {/* Point C (3-manzil) agar mavjud bo'lsa */}
+            {pointC ? (
+              <div className="p-2.5 bg-rose-50/70 border border-rose-200/80 rounded-2xl space-y-1.5 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                      C
+                    </span>
+                    <span className="text-[11px] font-bold text-rose-950">
+                      3-Manzil (Oraliq tushirish yoki 2-do'kon)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setPointC(null);
+                      const r = await getRoute(pointA, pointB);
+                      setRouteData(r);
+                    }}
+                    className="text-[10px] text-rose-700 hover:text-rose-900 font-extrabold px-2 py-0.5 rounded-full bg-white border border-rose-200 shadow-2xs transition-colors"
+                  >
+                    ✕ O'chirish
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
+                  <select
+                    value={pointC.city}
+                    onChange={async (e) => {
+                      const found = UZBEKISTAN_CITIES.find(c => c.city === e.target.value) || pointC;
+                      setPointC(found);
+                      const pts = [pointA, pointB, found];
+                      const r = await getMultiPointRoute(pts);
+                      setRouteData(r);
+                    }}
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-rose-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  >
+                    {UZBEKISTAN_CITIES.map(c => (
+                      <option key={c.city} value={c.city}>{c.city} ({c.district})</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={pointC.address}
+                    onChange={(e) => setPointC({ ...pointC, address: e.target.value })}
+                    placeholder="2-do'kon yoki oraliq punkt"
+                    className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-rose-200 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-rose-500"
+                  />
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={async () => {
+                  const defaultC = UZBEKISTAN_CITIES[4]; // Buxoro
+                  setPointC(defaultC);
+                  const r = await getMultiPointRoute([pointA, pointB, defaultC]);
+                  setRouteData(r);
+                }}
+                className="w-full py-2.5 px-3 rounded-2xl border border-dashed border-teal-300 bg-teal-50/40 hover:bg-teal-50 text-teal-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-[0.99]"
+              >
+                <Plus className="w-3.5 h-3.5 text-teal-600" />
+                <span>+ 3-manzilni qo'shish (Oraliq tushirish yoki 2-do'kon)</span>
+              </button>
+            )}
+
             <MapPicker
               initialPointA={pointA}
               initialPointB={pointB}
-              onPointsSelected={(a, b, route) => {
+              initialPointC={pointC}
+              onPointsSelected={(a, b, c, route) => {
                 setPointA(a);
                 setPointB(b);
+                setPointC(c);
                 setRouteData(route);
               }}
             />
