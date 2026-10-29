@@ -16,7 +16,10 @@ import {
   Calculator,
   Send,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  ExternalLink,
+  Palette,
+  HardDrive
 } from 'lucide-react';
 import { isAppwriteConnected } from '../services/appwriteClient';
 
@@ -234,30 +237,78 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         <button
           type="button"
           onClick={onOpenAppwriteSettings}
-          className="w-full p-3.5 rounded-2xl bg-white/60 hover:bg-white/80 backdrop-blur-md border border-white/80 flex items-center justify-between text-left transition-colors active:scale-99 shadow-2xs"
+          className="w-full p-3.5 rounded-2xl bg-white/75 hover:bg-white/90 backdrop-blur-md border border-white/90 flex flex-col gap-2 text-left transition-colors active:scale-99 shadow-xs"
+        >
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2.5">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold ${
+                isAppwrite ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-600'
+              }`}>
+                <Cloud className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>Appwrite Cloud (Frankfurt, EU)</span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.2 bg-rose-100 text-rose-700 rounded-full">
+                    75k Bepul
+                  </span>
+                </div>
+                <div className="text-[10px] text-slate-400">
+                  {isAppwrite ? 'cloud.appwrite.io • Project: 6ae2ea99001accd5eab5' : 'Project ID ulab biriktirish'}
+                </div>
+              </div>
+            </div>
+            <span className={`text-xs font-bold ${isAppwrite ? 'text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200' : 'text-teal-700'}`}>
+              {isAppwrite ? 'Ulangan ✓' : 'Ulash →'}
+            </span>
+          </div>
+
+          {isAppwrite && (
+            <div className="grid grid-cols-3 gap-1 pt-1 border-t border-slate-100 text-[9px] text-slate-500 font-medium">
+              <div className="bg-slate-50 rounded-lg p-1.5 text-center">
+                <span className="block text-slate-400">Baza joyi</span>
+                <strong className="text-slate-800">750 MB</strong>
+              </div>
+              <div className="bg-slate-50 rounded-lg p-1.5 text-center">
+                <span className="block text-slate-400">Fayl xotirasi</span>
+                <strong className="text-slate-800">2.0 GB</strong>
+              </div>
+              <div className="bg-slate-50 rounded-lg p-1.5 text-center">
+                <span className="block text-slate-400">Foydalanuvchi</span>
+                <strong className="text-emerald-700">75k MAU</strong>
+              </div>
+            </div>
+          )}
+        </button>
+
+        {/* Canva Marketing Design Link */}
+        <a
+          href="https://canva.link/cs0b3k7j6fegtu2"
+          target="_blank"
+          rel="noreferrer"
+          className="w-full p-3.5 rounded-2xl bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-sky-500/10 hover:from-purple-500/15 hover:to-sky-500/15 backdrop-blur-md border border-purple-200/60 flex items-center justify-between text-left transition-colors active:scale-99 shadow-xs"
         >
           <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold ${
-              isAppwrite ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-600'
-            }`}>
-              <Cloud className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold shadow-xs">
+              <Palette className="w-4 h-4" />
             </div>
             <div>
               <div className="font-bold text-slate-800 flex items-center gap-1.5">
-                <span>Appwrite Cloud Baza</span>
-                <span className="text-[9px] font-bold px-1.5 py-0.2 bg-rose-100 text-rose-700 rounded-full">
-                  75k Bepul
+                <span>YUKTOP Canva Reklama Posteri</span>
+                <span className="text-[9px] font-bold px-1.5 py-0.2 bg-purple-100 text-purple-700 rounded-full">
+                  Canva AI
                 </span>
               </div>
-              <div className="text-[10px] text-slate-400">
-                {isAppwrite ? 'Faol ulangan (Realtime WebSockets)' : 'Project ID ulab biriktirish'}
+              <div className="text-[10px] text-slate-500">
+                Rasmiy reklama banneri va ijtimoiy tarmoqlar dizayni
               </div>
             </div>
           </div>
-          <span className={`text-xs font-bold ${isAppwrite ? 'text-emerald-700' : 'text-teal-700'}`}>
-            {isAppwrite ? 'Ulangan ✓' : 'Ulash →'}
+          <span className="text-purple-700 font-bold text-xs flex items-center gap-0.5">
+            <span>Ko'rish</span>
+            <ExternalLink className="w-3 h-3" />
           </span>
-        </button>
+        </a>
 
         <button
           type="button"
@@ -270,7 +321,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </div>
             <div>
               <div className="font-bold text-slate-800">Supabase / PostgreSQL Sozlamalari</div>
-              <div className="text-[10px] text-slate-400">Bulutli baza va Realtime kanallar</div>
+              <div className="text-[10px] text-slate-400">Muqobil PostgreSQL bulutli bazasi</div>
             </div>
           </div>
           <span className="text-teal-700 font-bold text-xs">Ochish →</span>
@@ -283,7 +334,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </div>
             <div>
               <div className="font-bold text-slate-800">Android APK Fayli</div>
-              <div className="text-[10px] text-slate-400">YUKTOP-v1.1.0-release.apk tayyor holda</div>
+              <div className="text-[10px] text-slate-400">YUKTOP-v2.0.0-appwrite-cloud.apk tayyor holda</div>
             </div>
           </div>
           <span className="text-emerald-700 font-bold text-[11px] bg-emerald-500/15 px-2.5 py-0.5 rounded-full border border-emerald-300/60 backdrop-blur-md">

@@ -16,7 +16,8 @@
   /* SINGLE ROOT SCROLLER ARCHITECTURE (120FPS SILK-SMOOTH ANDROID) */
   html {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: #F8FAFC !important;
+    background: radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.08) 0px, transparent 50%), #F8FAFC !important;
+    background-attachment: fixed !important;
     color: #0F172A;
     margin: 0;
     padding: 0;
@@ -38,7 +39,7 @@
     overflow: visible !important;
     touch-action: pan-y;
     overscroll-behavior-y: none !important;
-    background-color: #F8FAFC !important;
+    background: transparent !important;
     color: #0F172A;
   }
 
@@ -52,27 +53,10 @@
 }
 
 /* ============================================================
-   ZERO-LAG 120FPS GPU HARDWARE ACCELERATED STYLING
+   CRYSTAL GLASSMORPHISM ("GLAZA SHAFFAF") + 120FPS SILK SMOOTH
    ============================================================ */
 
-/* 1. Eliminate 100% of expensive GPU Gaussian blur shaders across all elements */
-*,
-*::before,
-*::after,
-[class*="backdrop-blur"],
-.glass-card,
-.glass-card-subtle,
-.glass-input,
-.glass-pill,
-.glass-pill-teal,
-.glass-nav,
-header.sticky,
-.soft-card {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-/* 2. Remove transform scale on list cards so touching to scroll never stutters */
+/* 1. Prevent layout scale down on touchstart so mobile scroll never stutters */
 div[onClick],
 .cursor-pointer {
   -webkit-touch-callout: none;
@@ -80,63 +64,26 @@ div[onClick],
   user-select: none;
 }
 
-/* Prevent scale down or heavy transition on touchstart while scrolling */
 .cargo-card,
 [class*="active:scale-99"],
 [class*="active:scale-98"] {
   transform: none !important;
-  transition: border-color 0.1s ease, background-color 0.1s ease !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease !important;
 }
 
-/* 3. Hardware isolation for list cards to prevent full-page layout thrashing */
+/* 2. Hardware isolation to prevent full-page layout thrashing */
 .cargo-card,
 [class*="rounded-2xl"],
 [class*="rounded-[26px]"],
-[class*="rounded-[28px]"] {
+[class*="rounded-[28px]"],
+[class*="rounded-[32px]"] {
   contain: layout style paint;
 }
 
-/* 4. Crisp, high-contrast snow-white cards with lightweight 1px borders & soft shadows */
+/* 3. Crystal Translucent Cards ("Glaza Shafof") */
 .glass-card,
-.soft-card {
-  background-color: #FFFFFF !important;
-  border: 1px solid rgba(226, 232, 240, 0.95) !important;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04) !important;
-  border-radius: 20px;
-}
-
-.glass-card-subtle {
-  background-color: #FFFFFF !important;
-  border: 1px solid rgba(241, 245, 249, 1) !important;
-  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03) !important;
-  border-radius: 18px;
-}
-
-/* 5. Sticky Header - Pure Solid White, Hardware Composited Layer */
-header.sticky {
-  background-color: #FFFFFF !important;
-  border-bottom: 1px solid #E2E8F0 !important;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.05) !important;
-  transform: translateZ(0);
-}
-
-/* 6. Floating Bottom Navigation - Solid Pure White, Hardware Layer */
-.glass-nav,
-[class*="BottomNavigation"] {
-  background-color: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08) !important;
-  transform: translateZ(0);
-}
-
-/* 7. Modal Bottom Sheets */
-.glass-modal-sheet {
-  background-color: #FFFFFF !important;
-  border: 1px solid #E2E8F0 !important;
-  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.25) !important;
-}
-
-/* 8. Map all semi-transparent white card utilities to solid white */
+.soft-card,
+.cargo-card,
 [class*="bg-white/60"],
 [class*="bg-white/65"],
 [class*="bg-white/70"],
@@ -144,7 +91,51 @@ header.sticky {
 [class*="bg-white/75"],
 [class*="bg-white/80"],
 [class*="bg-white/85"] {
-  background-color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(12px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95) !important;
+  border-radius: 24px;
+}
+
+.glass-card-subtle {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 2px 10px 0 rgba(15, 23, 42, 0.03) !important;
+  border-radius: 20px;
+}
+
+/* 4. Sticky Header - Frosted Crystal Glass with Hardware Compositing */
+header.sticky {
+  background: rgba(255, 255, 255, 0.84) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.75) !important;
+  box-shadow: 0 4px 24px 0 rgba(15, 23, 42, 0.04) !important;
+  transform: translateZ(0);
+}
+
+/* 5. Floating Bottom Navigation - Frosted Crystal Glass */
+.glass-nav,
+[class*="BottomNavigation"] {
+  background: rgba(255, 255, 255, 0.86) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.1), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95) !important;
+  transform: translateZ(0);
+}
+
+/* 6. Modal Bottom Sheets - Deep Frosted Crystal */
+.glass-modal-sheet {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.3) !important;
 }
 
 /* Form Inputs */
