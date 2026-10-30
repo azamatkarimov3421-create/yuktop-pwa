@@ -90,30 +90,30 @@ export const AppwriteCloudCard: React.FC<AppwriteCloudCardProps> = ({
       {/* 1. Header with Appwrite Brand and Live Pulsing Status */}
       <div className="flex items-center justify-between pb-3 border-b border-slate-100/80">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-600 via-rose-500 to-amber-500 text-white flex items-center justify-center font-black shadow-md shadow-rose-500/25 border border-white/40">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-500 via-pink-600 to-rose-700 text-white flex items-center justify-center font-black shadow-md shadow-rose-500/20 border border-white/30 shrink-0">
             <Cloud className="w-6 h-6 stroke-[2.2]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <h2 className="text-sm font-black text-slate-900 leading-tight">
-                Appwrite Cloud Baza
+                Appwrite Cloud Hub
               </h2>
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200/80">
-                Loyiha: yuktop
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-900 text-white">
+                yuktop
               </span>
             </div>
             <p className="text-[11px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1.5">
-              <Server className="w-3.5 h-3.5 text-teal-600" />
-              <span>Frankfurt (EU Server) • cloud.appwrite.io</span>
+              <Server className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Frankfurt (EU) • cloud.appwrite.io</span>
             </p>
           </div>
         </div>
 
         {/* Live Status Badge */}
         <div className="flex flex-col items-end gap-1">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-800 border border-emerald-300/80 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping" />
-            <span>Onlayn Bog'langan</span>
+            <span>Bog'langan</span>
           </span>
           {pingResult?.latencyMs ? (
             <span className="text-[10px] font-mono font-bold text-slate-400">

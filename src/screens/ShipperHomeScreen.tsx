@@ -43,11 +43,17 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
 
   return (
     <div className="space-y-4 pb-36 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
-      {/* 1. World-Class Bento Hero Banner */}
-      <div className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 text-white p-5 xs:p-6 shadow-[0_20px_50px_-10px_rgba(13,148,136,0.25)] border border-white/15">
-        {/* Ambient Glows */}
-        <div className="absolute -top-12 -right-12 w-48 h-48 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+      {/* 1. World-Class Bento Hero Banner with 3D Cinematic Freight Backdrop */}
+      <div className="relative overflow-hidden rounded-[34px] bg-slate-950 text-white p-5 xs:p-6 shadow-[0_20px_50px_-10px_rgba(13,148,136,0.35)] border border-white/20 group">
+        {/* Cinematic 3D Truck Image Layer */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-40 scale-105 group-hover:scale-100 transition-transform duration-700 pointer-events-none"
+          style={{ backgroundImage: "url('/assets/hero_freight_truck.jpg')" }}
+        />
+        {/* Dark Obsidian Luxury Vignette Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/60 pointer-events-none" />
+        <div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-500/25 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 space-y-4">
           {/* Top Row: User Greeting & Status */}
@@ -55,17 +61,21 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-teal-300">
-                  Yuk Beruvchi Paneli
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">
+                  Yuk Beruvchi Paneli • YUKTOP PRO
                 </span>
               </div>
-              <h1 className="text-xl xs:text-2xl font-black tracking-tight mt-1 text-white">
+              <h1 className="text-xl xs:text-2xl font-black tracking-tight mt-1 text-white drop-shadow-sm">
                 Assalomu alaykum, {profile.fullName.split(' ')[0]}!
               </h1>
             </div>
 
-            <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-teal-300 shadow-inner">
-              <Package className="w-6 h-6 stroke-[2.2]" />
+            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-emerald-400/30 shadow-lg shadow-emerald-950/50 shrink-0">
+              <img 
+                src="/assets/yuktop_logo_3d.jpg" 
+                alt="Logo" 
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
 
@@ -73,26 +83,26 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
           <button
             type="button"
             onClick={onOpenPostCargo}
-            className="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-teal-500 via-teal-400 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-black text-sm shadow-[0_8px_25px_rgba(20,184,166,0.35)] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 group"
+            className="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 hover:from-emerald-300 hover:to-cyan-300 text-slate-950 font-black text-sm shadow-[0_8px_25px_rgba(16,185,129,0.4)] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 group/btn"
           >
-            <div className="w-6 h-6 rounded-full bg-slate-950 text-white flex items-center justify-center font-black group-hover:rotate-90 transition-transform">
+            <div className="w-6 h-6 rounded-full bg-slate-950 text-white flex items-center justify-center font-black group-hover/btn:rotate-90 transition-transform">
               <Plus className="w-4 h-4 stroke-[3]" />
             </div>
-            <span className="tracking-tight">Yangi yuk e'lon qilish</span>
+            <span className="tracking-tight text-slate-950 font-black">Yangi yuk e'lon qilish</span>
           </button>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/10 text-center">
-            <div className="p-2 rounded-xl bg-white/5 backdrop-blur-md">
-              <span className="block text-[10px] text-teal-200/70 font-semibold">Faol haydovchilar</span>
+          <div className="grid grid-cols-3 gap-2 pt-1 border-t border-white/15 text-center">
+            <div className="p-2 rounded-xl bg-black/40 backdrop-blur-md border border-white/10">
+              <span className="block text-[10px] text-emerald-200/80 font-semibold">Faol transport</span>
               <strong className="text-xs font-black text-white">120+ ta</strong>
             </div>
-            <div className="p-2 rounded-xl bg-white/5 backdrop-blur-md">
-              <span className="block text-[10px] text-teal-200/70 font-semibold">O'rtacha taklif</span>
-              <strong className="text-xs font-black text-teal-300">~8 daqiqa</strong>
+            <div className="p-2 rounded-xl bg-black/40 backdrop-blur-md border border-white/10">
+              <span className="block text-[10px] text-cyan-200/80 font-semibold">O'rtacha taklif</span>
+              <strong className="text-xs font-black text-cyan-300">~8 daqiqa</strong>
             </div>
-            <div className="p-2 rounded-xl bg-white/5 backdrop-blur-md">
-              <span className="block text-[10px] text-teal-200/70 font-semibold">Xavfsizlik</span>
+            <div className="p-2 rounded-xl bg-black/40 backdrop-blur-md border border-white/10">
+              <span className="block text-[10px] text-emerald-200/80 font-semibold">Xavfsizlik</span>
               <strong className="text-xs font-black text-emerald-400">100% GPS</strong>
             </div>
           </div>
@@ -256,10 +266,28 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
                   </div>
                 </div>
 
-                {/* Cargo Title */}
-                <h3 className="text-sm font-black text-slate-900 group-hover:text-teal-800 transition-colors">
-                  {cargo.title}
-                </h3>
+                {/* Cargo Title and 3D Asset Preview */}
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 shadow-sm shrink-0">
+                    <img 
+                      src={cargo.imageUrl || "/assets/3d_cargo_pallet.jpg"} 
+                      alt={cargo.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-black text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                      {cargo.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 font-bold mt-1">
+                      <span>⚖️ {cargo.weightKg >= 1000 ? `${(cargo.weightKg / 1000).toFixed(1)} t` : `${cargo.weightKg} kg`}</span>
+                      <span>•</span>
+                      <span>📦 {cargo.volumeM3} m³</span>
+                      <span>•</span>
+                      <span className="text-emerald-700 font-extrabold">{cargo.urgency}</span>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Visual Route Timeline Graphic */}
                 <div className="p-3 bg-slate-50/80 rounded-2xl border border-slate-100/90 space-y-2">

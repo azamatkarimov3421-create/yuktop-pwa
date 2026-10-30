@@ -58,20 +58,24 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
       {/* 1. Haydovchi transporti va Bo'sh reys e'lon qilish kartochkasi */}
       <div className="p-4 bg-gradient-to-br from-slate-900/95 via-sky-950/95 to-slate-900/95 backdrop-blur-2xl text-white rounded-[32px] border border-sky-500/30 shadow-xl flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 border border-sky-400/30 shadow-inner">
-            <Truck className="w-6 h-6" />
+          <div className="w-12 h-12 rounded-2xl overflow-hidden bg-slate-900 border border-cyan-400/40 shadow-lg shadow-cyan-950/40 shrink-0">
+            <img 
+              src="/assets/3d_truck_carrier.jpg" 
+              alt="Transport" 
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-black text-white">
                 {vehicle?.model || 'KamAZ 5490 Neo'}
               </h2>
-              <span className="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded-lg text-slate-200 font-bold border border-white/10">
+              <span className="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded-lg text-emerald-300 font-bold border border-emerald-400/30">
                 {vehicle?.plateNumber || '01 777 UZB'}
               </span>
             </div>
             <div className="text-xs text-slate-300 font-medium mt-0.5">
-              Sig'im: {vehicle?.capacityTon || 22} tonna • {vehicle?.volumeM3 || 86} m³
+              Sig'im: {vehicle?.capacityTon || 22} tonna • {vehicle?.volumeM3 || 86} m³ • Bortli/Tent
             </div>
           </div>
         </div>

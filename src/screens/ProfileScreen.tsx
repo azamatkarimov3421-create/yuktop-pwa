@@ -72,25 +72,46 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       <div className="p-5 bg-white/80 backdrop-blur-2xl rounded-3xl border border-white/85 shadow-lg space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-teal-700 via-teal-800 to-sky-800 text-white flex items-center justify-center font-black text-xl shadow-md border border-white/30">
-              {fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U'}
+            {/* 3D Nano Banana Driver Avatar */}
+            <div className="w-16 h-16 rounded-3xl overflow-hidden bg-slate-900 border-2 border-emerald-400/40 shadow-xl shadow-emerald-950/20 shrink-0 relative group">
+              <img 
+                src="/assets/3d_driver_avatar.jpg" 
+                alt="Avatar" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+              />
+              <span className="absolute bottom-1 right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-white" />
             </div>
 
             <div>
-              <h1 className="text-base font-black text-slate-900 leading-tight">
-                {fullName}
-              </h1>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-base font-black text-slate-900 leading-tight">
+                  {fullName}
+                </h1>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  ✓ Tasdiqlangan
+                </span>
+              </div>
               <p className="text-xs text-slate-500 font-semibold mt-0.5">{phone}</p>
-              {telegram && (
-                <p className="text-[11px] text-sky-700 font-bold mt-0.5">@{telegram}</p>
-              )}
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[11px] font-extrabold text-amber-500 flex items-center gap-0.5">
+                  ★ 4.98
+                </span>
+                <span className="text-[10px] text-slate-400">•</span>
+                <span className="text-[11px] text-slate-500 font-semibold">84 ta muvaffaqiyatli yetkazish</span>
+                {telegram && (
+                  <>
+                    <span className="text-[10px] text-slate-400">•</span>
+                    <span className="text-[11px] text-cyan-700 font-bold">@{telegram}</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
           <button
             type="button"
             onClick={() => setIsEditing(!isEditing)}
-            className="p-2.5 rounded-2xl bg-teal-500/15 border border-teal-200/80 text-teal-800 hover:bg-teal-500/25 transition-all text-xs font-bold flex items-center gap-1 active:scale-95"
+            className="p-2.5 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 transition-all text-xs font-bold flex items-center gap-1 active:scale-95 shadow-sm"
             title="Profilni tahrirlash"
           >
             <Edit3 className="w-4 h-4" />

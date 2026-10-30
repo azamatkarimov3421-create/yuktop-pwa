@@ -27,16 +27,26 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-md md:max-w-2xl mx-auto flex items-center justify-between gap-2">
         {/* Brand */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-slate-900 via-teal-950 to-teal-800 flex items-center justify-center text-white shadow-md shadow-teal-950/20 shrink-0 border border-white/20">
-            <Truck className="w-5 h-5 stroke-[2.2] text-teal-300" />
-          </div>
+          <button
+            type="button"
+            onClick={onOpenProfile}
+            className="w-10 h-10 rounded-2xl overflow-hidden shadow-md shadow-emerald-950/20 shrink-0 border border-emerald-500/20 active:scale-95 transition-all group relative"
+            title="YUKTOP Asosiy sahifa"
+          >
+            <img 
+              src="/assets/yuktop_logo_3d.jpg" 
+              alt="YUKTOP Logo" 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            />
+            <div className="absolute inset-0 bg-emerald-500/10 pointer-events-none" />
+          </button>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-lg font-black tracking-tight text-slate-900 leading-none">
                 YUKTOP
               </span>
-              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-teal-500/15 text-teal-800 border border-teal-200/60 tracking-wider">
-                UZ
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-200/60 tracking-wider">
+                PRO
               </span>
             </div>
             <button
@@ -46,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Appwrite Cloud Baza holatini ko'rish"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
-              <span className="group-hover:text-teal-700">Appwrite Cloud</span>
+              <span className="group-hover:text-emerald-700">120+ Onlayn • Cloud</span>
             </button>
           </div>
         </div>
@@ -101,14 +111,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          {/* Profile Avatar */}
+          {/* Profile Avatar with 3D Render */}
           <button
             type="button"
             onClick={onOpenProfile}
-            className="w-9 h-9 rounded-2xl border border-white/80 bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center text-xs font-black shadow-[0_2px_8px_rgba(15,23,42,0.08)] active:scale-95 transition-all shrink-0"
-            title="Profil"
+            className="w-9 h-9 rounded-2xl overflow-hidden border border-emerald-500/30 shadow-[0_2px_8px_rgba(15,23,42,0.08)] active:scale-95 transition-all shrink-0 relative group"
+            title="Mening Profilim"
           >
-            {activeRole === 'yuk_beruvchi' ? 'YB' : 'HD'}
+            <img 
+              src="/assets/3d_driver_avatar.jpg" 
+              alt="Profil avatar" 
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+            />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
           </button>
         </div>
       </div>
