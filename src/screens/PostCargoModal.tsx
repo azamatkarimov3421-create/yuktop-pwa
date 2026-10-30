@@ -81,8 +81,14 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
   const [hasDocuments, setHasDocuments] = useState(true);
   const [specialNotes, setSpecialNotes] = useState('');
 
-  const [pointA, setPointA] = useState<LocationPoint>(UZBEKISTAN_CITIES[0]); // Toshkent
-  const [pointB, setPointB] = useState<LocationPoint>(UZBEKISTAN_CITIES[3]); // Samarqand
+  const [pointA, setPointA] = useState<LocationPoint>({
+    ...UZBEKISTAN_CITIES[0],
+    address: ''
+  }); // Toshkent
+  const [pointB, setPointB] = useState<LocationPoint>({
+    ...UZBEKISTAN_CITIES[3],
+    address: ''
+  }); // Samarqand
   const [pointC, setPointC] = useState<LocationPoint | null>(null); // 3-manzil (Oraliq/yakuniy tushirish)
   const [routeData, setRouteData] = useState<RouteGeometry>({
     coordinates: [],
@@ -103,7 +109,7 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
       const res = await locationService.getCurrentLocation();
       setPointA(res.point);
       if (res.isGps) {
-        setGpsSuccessMessage(`Aniqlandi: ${res.point.city} (${res.point.district}) ±${res.accuracyMeters}m`);
+        setGpsSuccessMessage(`Aniqlandi: ${res.point.address || res.point.city} (±${res.accuracyMeters}m)`);
       } else if (res.message) {
         setGpsSuccessMessage(res.message);
       } else {
@@ -119,6 +125,13 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
       setIsDetectingGps(false);
     }
   };
+
+  // Modal ochilganda avtomatik haqiqiy joylashuvni aniqlash
+  useEffect(() => {
+    if (isOpen && !pointA.address) {
+      handleDetectGps().catch(() => {});
+    }
+  }, [isOpen]);
 
   // Calculate smart market rates dynamically
   const weightVal = parseFloat(weightTon) || 5;

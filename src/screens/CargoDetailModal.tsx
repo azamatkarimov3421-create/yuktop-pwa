@@ -25,7 +25,8 @@ import {
   Calculator,
   ExternalLink,
   ArrowLeft,
-  Navigation
+  Navigation,
+  Trash2
 } from 'lucide-react';
 
 interface CargoDetailModalProps {
@@ -40,6 +41,7 @@ interface CargoDetailModalProps {
   onRejectBid?: (bidId: string) => void;
   onSubmitCarrierBid?: (cargoId: string, price: number, note?: string) => void;
   onOpenChatWithDriver?: (driverId: string) => void;
+  onDeleteCargo?: (cargoId: string) => void;
 }
 
 export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
@@ -53,7 +55,8 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
   onCounterBid,
   onRejectBid,
   onSubmitCarrierBid,
-  onOpenChatWithDriver
+  onOpenChatWithDriver,
+  onDeleteCargo
 }) => {
   if (!isOpen || !cargo) return null;
 
@@ -541,6 +544,24 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
                   </form>
                 )}
               </div>
+            </div>
+          )}
+          {/* Yuk egasi: E'lonni o'chirish tugmasi */}
+          {activeRole === 'yuk_beruvchi' && onDeleteCargo && (
+            <div className="pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm("Rostdan ham ushbu e'lonni o'chirmoqchimisiz?")) {
+                    onDeleteCargo(cargo.id);
+                    onClose();
+                  }
+                }}
+                className="w-full py-2.5 px-3 rounded-2xl bg-rose-50/80 hover:bg-rose-100/80 border border-rose-200 text-rose-700 font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all shadow-2xs active:scale-[0.99]"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Ushbu e'lonni o'chirish</span>
+              </button>
             </div>
           )}
         </div>

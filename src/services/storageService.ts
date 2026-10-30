@@ -73,6 +73,16 @@ class StorageService {
         this.activeRole = storedRole;
       }
 
+      const storedShipper = localStorage.getItem(STORAGE_KEYS.SHIPPER_PROFILE);
+      if (storedShipper) {
+        this.shipperProfile = { ...this.shipperProfile, ...JSON.parse(storedShipper) };
+      }
+
+      const storedCarrier = localStorage.getItem('yuktop_carrier_profile_v2');
+      if (storedCarrier) {
+        this.carrierProfile = { ...this.carrierProfile, ...JSON.parse(storedCarrier) };
+      }
+
       const storedVehicle = localStorage.getItem(STORAGE_KEYS.CARRIER_VEHICLE);
       if (storedVehicle && this.carrierProfile.vehicle) {
         this.carrierProfile.vehicle = { ...this.carrierProfile.vehicle, ...JSON.parse(storedVehicle) };
@@ -177,9 +187,54 @@ class StorageService {
     }
   }
 
+  public updateProfile(data: Partial<UserProfile>) {
+    if (this.activeRole === 'yuk_beruvchi') {
+      this.shipperProfile = { ...this.shipperProfile, ...data };
+      try {
+        localStorage.setItem(STORAGE_KEYS.SHIPPER_PROFILE, JSON.stringify(this.shipperProfile));
+      } catch {}
+    } else {
+      this.carrierProfile = { ...this.carrierProfile, ...data };
+      try {
+        localStorage.setItem('yuktop_carrier_profile_v2', JSON.stringify(this.carrierProfile));
+      } catch {}
+    }
+    this.save();
+  }
+
+  public clearAllDemoData() {
+    this.cargos = [];
+    this.carrierTrips = [];
+    this.orders = [];
+    this.bids = [];
+    this.messages = [];
+    this.notifications = [];
+    this.save();
+  }
+
   // --- CARGOS ---
   public getCargos(): CargoItem[] {
     return [...this.cargos];
+  }
+
+  public deleteCargo(id: string): boolean {
+    const idx = this.cargos.findIndex(c => c.id === id);
+    if (idx !== -1) {
+      this.cargos.splice(idx, 1);
+      this.save();
+      return true;
+    }
+    return false;
+  }
+
+  public deleteCarrierTrip(id: string): boolean {
+    const idx = this.carrierTrips.findIndex(t => t.id === id);
+    if (idx !== -1) {
+      this.carrierTrips.splice(idx, 1);
+      this.save();
+      return true;
+    }
+    return false;
   }
 
   public getCargoById(id: string): CargoItem | undefined {

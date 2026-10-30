@@ -203,6 +203,13 @@ export default function App() {
     refreshState();
   };
 
+  // Delete cargo (Shipper)
+  const handleDeleteCargo = (cargoId: string) => {
+    storageService.deleteCargo(cargoId);
+    setSelectedCargoForDetail(null);
+    refreshState();
+  };
+
   // Update order status (kelishildi -> yuklashda -> yolda -> yetkazildi)
   const handleUpdateOrderStatus = (orderId: string, status: OrderStatus) => {
     storageService.updateOrderStatus(orderId, status);
@@ -309,6 +316,7 @@ export default function App() {
                 activeRole={activeRole}
                 onRoleToggle={handleRoleToggle}
                 onOpenVehicleModal={() => setShowVehicleModal(true)}
+                onDataCleared={() => refreshState()}
               />
             )}
           </>
@@ -366,6 +374,7 @@ export default function App() {
         onCounterBid={handleCounterBid}
         onRejectBid={handleRejectBid}
         onSubmitCarrierBid={handleCarrierSubmitBid}
+        onDeleteCargo={handleDeleteCargo}
       />
 
       {/* 4. Carrier Vehicle Settings Modal */}
