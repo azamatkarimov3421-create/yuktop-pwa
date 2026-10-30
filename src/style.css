@@ -120,15 +120,46 @@ header.sticky {
 /* 5. Floating Bottom Navigation - Frosted Crystal Glass */
 .glass-nav,
 [class*="BottomNavigation"] {
-  background: rgba(255, 255, 255, 0.86) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.92) !important;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.1), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 12px 36px -6px rgba(15, 23, 42, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 1) !important;
   transform: translateZ(0);
 }
 
-/* 6. Modal Bottom Sheets - Deep Frosted Crystal */
+/* 6. Bespoke Route Graphic Styling */
+.route-connector-line {
+  position: relative;
+  width: 2px;
+  background: linear-gradient(180deg, #0D9488 0%, #0284C7 100%);
+  border-radius: 9999px;
+}
+
+.route-dot-glow {
+  box-shadow: 0 0 10px rgba(13, 148, 136, 0.4);
+}
+
+/* 7. Action Button Shimmer Effect */
+@keyframes subtle-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: subtle-shimmer 3.5s infinite;
+}
+
+/* 8. Modal Bottom Sheets - Deep Frosted Crystal */
 .glass-modal-sheet {
   background: rgba(255, 255, 255, 0.92) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;

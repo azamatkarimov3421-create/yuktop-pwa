@@ -182,48 +182,77 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
                 <div
                   key={cargo.id}
                   onClick={() => onSelectCargo(cargo, distanceToPickupKm)}
-                  className="p-4 bg-white/80 backdrop-blur-xl rounded-3xl border border-white/85 shadow-lg hover:border-sky-400/80 cursor-pointer transition-all space-y-3"
+                  className="p-4 xs:p-5 bg-white/85 backdrop-blur-2xl rounded-[30px] border border-white/95 shadow-[0_12px_32px_-4px_rgba(15,23,42,0.05)] hover:border-sky-400/80 cursor-pointer transition-all space-y-3 group"
                 >
-                  {/* Marshrut va Narx */}
+                  {/* Top Bar: Category & Price */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 text-base font-black text-slate-900 truncate">
-                      <MapPin className="w-4 h-4 text-sky-700 shrink-0" />
-                      <span>{cargo.pickupLocation.city}</span>
-                      <ArrowRight className="w-4 h-4 text-sky-600 stroke-[3] shrink-0" />
-                      <span>{cargo.deliveryLocation.city}</span>
-                      {cargo.stops && cargo.stops.length > 2 && (
-                        <span className="text-[10px] bg-rose-500/15 text-rose-800 font-black px-2 py-0.5 rounded-full border border-rose-200/60 shrink-0">
-                          {cargo.stops.length} ta manzil
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-500/15 px-2.5 py-1 rounded-full border border-sky-200/60">
+                        {cargo.category}
+                      </span>
+                      <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
+                        cargo.loadType === 'yigma_yuk' 
+                          ? 'bg-amber-500/15 text-amber-900 border-amber-300/60' 
+                          : 'bg-teal-500/15 text-teal-900 border-teal-300/60'
+                      }`}>
+                        {cargo.loadType === 'yigma_yuk' ? "📦 Yig'ma (LTL)" : "🚚 Butun fura (FTL)"}
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-sm xs:text-base font-black text-slate-900 block leading-tight">
+                        {formatMoneyUz(cargo.priceUzs)}
+                      </span>
+                      {distanceToPickupKm !== undefined && (
+                        <span className="text-[10px] text-sky-700 font-bold">
+                          📍 {distanceToPickupKm} km yaqin
                         </span>
                       )}
                     </div>
-
-                    <span className="text-base font-black text-emerald-700 shrink-0">
-                      {formatMoneyUz(cargo.priceUzs)}
-                    </span>
                   </div>
 
-                  {/* Parametrlar: Tonna, Toifa, Yuk turi */}
-                  <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold flex-wrap">
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 font-bold">
-                      {(cargo.weightKg / 1000).toFixed(1)} tonna
-                    </span>
-                    <span>•</span>
-                    <span>{cargo.volumeM3} m³</span>
-                    <span>•</span>
-                    <span>{cargo.category}</span>
-                    <span>•</span>
-                    <span className={cargo.loadType === 'yigma_yuk' ? 'text-amber-800 font-extrabold' : 'text-sky-800 font-extrabold'}>
-                      {cargo.loadType === 'yigma_yuk' ? "📦 Yig'ma yuk" : "🚚 Butun mashina"}
-                    </span>
+                  {/* Cargo Title */}
+                  <h3 className="text-sm font-black text-slate-900 group-hover:text-sky-800 transition-colors">
+                    {cargo.title}
+                  </h3>
+
+                  {/* Route Visual Timeline */}
+                  <div className="p-3 bg-slate-50/80 rounded-2xl border border-slate-100/90 space-y-2">
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-sky-600 ring-4 ring-sky-100 shrink-0 mt-1" />
+                      <div className="flex-1 min-w-0">
+                        <strong className="text-xs font-black text-slate-800 truncate block">{cargo.pickupLocation.city}</strong>
+                        <p className="text-[10px] text-slate-500 truncate">{cargo.pickupLocation.address || "Yuklash manzili"}</p>
+                      </div>
+                    </div>
+
+                    <div className="pl-1 flex items-center gap-2">
+                      <div className="w-0.5 h-4 bg-gradient-to-b from-sky-500 to-rose-500 ml-1 rounded-full" />
+                      <span className="text-[9px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200/60">
+                        {cargo.distanceKm} km
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-2.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-600 ring-4 ring-rose-100 shrink-0 mt-1" />
+                      <div className="flex-1 min-w-0">
+                        <strong className="text-xs font-black text-slate-800 truncate block">{cargo.deliveryLocation.city}</strong>
+                        <p className="text-[10px] text-slate-500 truncate">{cargo.deliveryLocation.address || "Yetkazish manzili"}</p>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Vaqti va Harakat tugmalari */}
-                  <div className="pt-2.5 border-t border-slate-100/80 flex items-center justify-between text-xs">
-                    <span className="text-slate-500 flex items-center gap-1 text-[11px] font-medium">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      {cargo.pickupDate} {cargo.pickupTimeWindow ? `(${cargo.pickupTimeWindow})` : ''}
-                    </span>
+                  {/* Specs & Actions Footer */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs flex-wrap gap-2">
+                    <div className="flex items-center gap-1.5 text-slate-600 font-bold text-[11px]">
+                      <span className="bg-slate-100 px-2 py-0.5 rounded-md">
+                        {(cargo.weightKg / 1000).toFixed(1)} t
+                      </span>
+                      <span className="bg-slate-100 px-2 py-0.5 rounded-md">
+                        {cargo.volumeM3} m³
+                      </span>
+                      <span className="text-slate-400 font-medium">• {cargo.pickupDate}</span>
+                    </div>
 
                     <div className="flex items-center gap-2">
                       <a
@@ -231,15 +260,15 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
                         onClick={e => e.stopPropagation()}
                         className="px-3.5 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 shadow-2xs active:scale-95 transition-all"
                       >
-                        <Phone className="w-3 h-3" />
+                        <Phone className="w-3.5 h-3.5" />
                         <span>Qo'ng'iroq</span>
                       </a>
 
                       <button
                         type="button"
-                        className="px-3.5 py-1.5 rounded-full bg-sky-700 hover:bg-sky-800 text-white font-extrabold text-xs flex items-center gap-1 shadow-2xs active:scale-95 transition-all"
+                        className="px-4 py-1.5 rounded-full bg-sky-700 hover:bg-sky-800 text-white font-black text-xs flex items-center gap-1.5 shadow-md shadow-sky-700/20 active:scale-95 transition-all"
                       >
-                        <Send className="w-3 h-3" />
+                        <Send className="w-3.5 h-3.5" />
                         <span>Taklif berish</span>
                       </button>
                     </div>
