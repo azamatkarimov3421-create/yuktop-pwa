@@ -39,10 +39,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 UZ
               </span>
             </div>
-            <div className="text-[10px] text-slate-500 font-semibold leading-none mt-1 flex items-center gap-1">
+            <button
+              type="button"
+              onClick={onOpenProfile}
+              className="text-[10px] text-slate-500 hover:text-slate-800 font-semibold leading-none mt-1 flex items-center gap-1 transition-colors group cursor-pointer"
+              title="Appwrite Cloud Baza holatini ko'rish"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
-              <span>Smart Logistika</span>
-            </div>
+              <span className="group-hover:text-teal-700">Appwrite Cloud</span>
+            </button>
           </div>
         </div>
 

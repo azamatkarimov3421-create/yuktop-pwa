@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserProfile, UserRole } from '../types';
 import { storageService } from '../services/storageService';
+import { AppwriteCloudCard } from '../components/AppwriteCloudCard';
 import { 
   User, 
   Phone, 
@@ -35,6 +36,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 }) => {
   const isCarrier = activeRole === 'yuk_tashuvchi';
   const vehicle = profile.vehicle;
+  const cargosCount = storageService.getCargos().length;
+  const tripsCount = storageService.getCarrierTrips().length;
 
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState(profile.fullName);
@@ -64,7 +67,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-28 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
+    <div className="space-y-4 pb-36 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
       {/* 1. Profile Header Glass Card */}
       <div className="p-5 bg-white/80 backdrop-blur-2xl rounded-3xl border border-white/85 shadow-lg space-y-4">
         <div className="flex items-center justify-between">
@@ -171,6 +174,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </button>
         </div>
       </div>
+
+      {/* 2. Appwrite Cloud Baza Markazi (Ulangan baza, server, project ID, API kalitlar, hajm, jonli ping) */}
+      <AppwriteCloudCard cargosCount={cargosCount} tripsCount={tripsCount} />
 
       {/* 2. Haydovchi transporti (Agar yuk tashuvchi bo'lsa) */}
       {isCarrier && vehicle && (

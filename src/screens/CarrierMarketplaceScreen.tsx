@@ -54,7 +54,7 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
   });
 
   return (
-    <div className="space-y-4 pb-28 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
+    <div className="space-y-4 pb-36 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
       {/* 1. Haydovchi transporti va Bo'sh reys e'lon qilish kartochkasi */}
       <div className="p-4 bg-gradient-to-br from-slate-900/95 via-sky-950/95 to-slate-900/95 backdrop-blur-2xl text-white rounded-[32px] border border-sky-500/30 shadow-xl flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">

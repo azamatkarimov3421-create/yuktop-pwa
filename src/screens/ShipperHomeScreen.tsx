@@ -42,7 +42,7 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
   const carrierTrips = storageService.getCarrierTrips();
 
   return (
-    <div className="space-y-4 pb-28 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
+    <div className="space-y-4 pb-36 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
       {/* 1. World-Class Bento Hero Banner */}
       <div className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 text-white p-5 xs:p-6 shadow-[0_20px_50px_-10px_rgba(13,148,136,0.25)] border border-white/15">
         {/* Ambient Glows */}

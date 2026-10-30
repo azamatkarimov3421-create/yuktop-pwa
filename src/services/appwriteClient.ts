@@ -104,28 +104,43 @@ export function isAppwriteConnected(): boolean {
   return !!config.projectId && config.projectId.trim() !== '';
 }
 
-export async function testAppwriteConnection(endpoint?: string, projectId?: string): Promise<{ success: boolean; message: string }> {
+export async function testAppwriteConnection(endpoint?: string, projectId?: string): Promise<{ success: boolean; message: string; latencyMs?: number }> {
   const ep = endpoint || getStoredAppwriteConfig().endpoint || DEFAULT_APPWRITE_ENDPOINT;
   const pid = projectId || getStoredAppwriteConfig().projectId;
 
   if (!pid || pid.trim() === '') {
-    return { success: false, message: "Appwrite Project ID kiritilmagan." };
+    return { success: false, message: "Appwrite Project ID kiritilmagan.", latencyMs: 0 };
   }
 
+  const startTime = Date.now();
   try {
-    const res = await fetch(`${ep}/health`, {
+    const res = await fetch(`${ep}/locale`, {
       headers: {
         'X-Appwrite-Project': pid
       }
     });
+    const latencyMs = Date.now() - startTime;
 
     if (res.ok || res.status === 200) {
-      return { success: true, message: "✅ Appwrite Cloud serveriga muvaffaqiyatli ulandi (Ping a'lo darajada)!" };
+      return { 
+        success: true, 
+        message: `✅ Appwrite Cloud serveriga muvaffaqiyatli ulandi! Ping: ${latencyMs} ms. Loyiha faol va bog'langan.`,
+        latencyMs 
+      };
     } else {
-      return { success: true, message: `✅ Serverga ulandi (Status: HTTP ${res.status}). Project ID faol.` };
+      return { 
+        success: true, 
+        message: `✅ Serverga ulandi (HTTP ${res.status}). Ping: ${latencyMs} ms.`,
+        latencyMs 
+      };
     }
   } catch (err: any) {
-    return { success: false, message: `Ulanishda xatolik: ${err.message || 'Server javob bermadi'}` };
+    const latencyMs = Date.now() - startTime;
+    return { 
+      success: false, 
+      message: `Ulanishda xatolik: ${err.message || 'Server javob bermadi'}`,
+      latencyMs 
+    };
   }
 }
 
