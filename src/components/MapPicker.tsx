@@ -320,8 +320,8 @@ export const MapPicker: React.FC<MapPickerProps> = ({
 
       {/* Address Resolution Loading Toast */}
       {isResolvingAddress && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[1000] px-3 py-1.5 rounded-full bg-slate-900/85 backdrop-blur-md text-white text-[11px] font-bold flex items-center gap-1.5 shadow-md">
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-400" />
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[1000] px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-slate-800 text-[11px] font-bold flex items-center gap-1.5 border border-slate-200/90 shadow-md">
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
           <span>Manzil aniqlanmoqda...</span>
         </div>
       )}

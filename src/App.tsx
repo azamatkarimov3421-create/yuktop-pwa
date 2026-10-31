@@ -403,8 +403,8 @@ export default function App() {
 
       {/* Exit Toast */}
       {showExitToast && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2.5 rounded-full bg-slate-900 text-white text-xs font-bold border border-white/20 shadow-xl flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] px-4 py-2 rounded-full bg-white/95 backdrop-blur-xl text-slate-900 text-xs font-bold border border-slate-200/90 shadow-xl flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
           <span>Ilovadan chiqish uchun yana bir bor bosing</span>
         </div>
       )}

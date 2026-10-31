@@ -4,16 +4,11 @@ import { storageService } from '../services/storageService';
 import { formatMoneyUz } from '../services/routingService';
 import { 
   Search, 
-  MapPin, 
   Truck, 
-  Clock, 
   Phone, 
-  Send,
-  Plus,
-  Scale,
-  Calendar,
-  Layers,
-  ArrowRight,
+  Plus, 
+  MapPin, 
+  ChevronRight,
   Trash2
 } from 'lucide-react';
 
@@ -32,12 +27,10 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
 }) => {
   const [activeMarketTab, setActiveMarketTab] = useState<'cargos' | 'trips'>('cargos');
   const [filterCity, setFilterCity] = useState('');
-  const [filterLoadType, setFilterLoadType] = useState<'all' | 'yigma_yuk' | 'tolik_mashina'>('all');
 
   const matchedItems = storageService.getMatchedCargosForCarrier();
   const carrierTrips = storageService.getCarrierTrips();
 
-  // Filter cargos by city search and loadType
   const filteredCargos = matchedItems.filter(item => {
     const c = item.cargo;
     if (filterCity.trim()) {
@@ -46,258 +39,151 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
       const matchDelivery = c.deliveryLocation.city.toLowerCase().includes(q);
       if (!matchPickup && !matchDelivery) return false;
     }
-    if (filterLoadType !== 'all') {
-      if (filterLoadType === 'yigma_yuk' && c.loadType !== 'yigma_yuk') return false;
-      if (filterLoadType === 'tolik_mashina' && c.loadType === 'yigma_yuk') return false;
-    }
     return true;
   });
 
   return (
-    <div className="space-y-4 pb-36 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
-      {/* 1. Haydovchi transporti va Bo'sh reys e'lon qilish kartochkasi */}
-      <div className="p-4 bg-gradient-to-br from-slate-900/95 via-sky-950/95 to-slate-900/95 backdrop-blur-2xl text-white rounded-[32px] border border-sky-500/30 shadow-xl flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl overflow-hidden bg-slate-900 border border-cyan-400/40 shadow-lg shadow-cyan-950/40 shrink-0">
-            <img 
-              src="/assets/3d_truck_carrier.jpg" 
-              alt="Transport" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-black text-white">
-                {vehicle?.model || 'KamAZ 5490 Neo'}
-              </h2>
-              <span className="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded-lg text-emerald-300 font-bold border border-emerald-400/30">
-                {vehicle?.plateNumber || '01 777 UZB'}
-              </span>
-            </div>
-            <div className="text-xs text-slate-300 font-medium mt-0.5">
-              Sig'im: {vehicle?.capacityTon || 22} tonna • {vehicle?.volumeM3 || 86} m³ • Bortli/Tent
-            </div>
-          </div>
+    <div className="space-y-4 pb-32 max-w-md md:max-w-xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
+      {/* 1. Haydovchi Transporti & Bo'sh Reys Tugmasi */}
+      <div className="p-4 bg-white/80 backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xs flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-bold text-slate-900">
+            {vehicle?.model || 'Yuk mashinasi'} ({vehicle?.capacityTon || 22} t)
+          </h2>
+          <p className="text-xs text-slate-500 font-mono mt-0.5">
+            {vehicle?.plateNumber || '01 777 UZB'} • {vehicle?.volumeM3 || 86} m³
+          </p>
         </div>
 
         <button
           type="button"
           onClick={onOpenPostTrip}
-          className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 text-white font-black text-xs shadow-md flex items-center gap-1.5 shrink-0 active:scale-95 transition-all"
+          className="px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200 text-slate-900 font-bold text-xs flex items-center gap-1.5 border border-slate-200/80 transition-all shadow-2xs active:scale-95"
         >
-          <Plus className="w-4 h-4 stroke-[3]" />
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Bo'sh reys</span>
         </button>
       </div>
 
-      {/* 2. Asosiy Tablar: [ Yuklar bozori ] | [ Bo'sh mashinalar (Poputniy) ] */}
-      <div className="flex bg-white/70 backdrop-blur-xl p-1.5 rounded-[24px] border border-white/80 shadow-sm">
+      {/* 2. Soddalashtirilgan Tablar */}
+      <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/60">
         <button
           type="button"
           onClick={() => setActiveMarketTab('cargos')}
-          className={`flex-1 py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 transition-all ${
+          className={`flex-1 py-2 rounded-xl font-bold text-xs transition-all ${
             activeMarketTab === 'cargos'
-              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-white text-slate-900 shadow-2xs'
+              : 'text-slate-500 hover:text-slate-900'
           }`}
         >
-          <Search className="w-4 h-4 text-sky-700" />
-          <span>Yuklar bozori ({filteredCargos.length})</span>
+          Yuklar bozori ({filteredCargos.length})
         </button>
 
         <button
           type="button"
           onClick={() => setActiveMarketTab('trips')}
-          className={`flex-1 py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 transition-all ${
+          className={`flex-1 py-2 rounded-xl font-bold text-xs transition-all ${
             activeMarketTab === 'trips'
-              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-white text-slate-900 shadow-2xs'
+              : 'text-slate-500 hover:text-slate-900'
           }`}
         >
-          <Truck className="w-4 h-4 text-emerald-700" />
-          <span>Bo'sh mashinalar ({carrierTrips.length})</span>
+          Bo'sh mashinalar ({carrierTrips.length})
         </button>
       </div>
 
-      {/* 3. TAB 1: YUKLAR BOZORI */}
+      {/* 3. Shahar qidiruv */}
+      <div className="relative">
+        <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          type="text"
+          placeholder="Shahar bo'yicha qidirish (Toshkent, Samarqand...)"
+          value={filterCity}
+          onChange={e => setFilterCity(e.target.value)}
+          className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"
+        />
+      </div>
+
+      {/* 4. TAB 1: YUKLAR BOZORI */}
       {activeMarketTab === 'cargos' && (
-        <div className="space-y-3">
-          {/* Shahar qidiruv va LTL/FTL filterlari */}
-          <div className="space-y-2">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Shahar bo'yicha qidirish (Toshkent, Samarqand...)"
-                value={filterCity}
-                onChange={e => setFilterCity(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white/80 backdrop-blur-md border border-white/80 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-hidden focus:bg-white shadow-2xs"
-              />
-            </div>
-
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-              <button
-                type="button"
-                onClick={() => setFilterLoadType('all')}
-                className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 ${
-                  filterLoadType === 'all'
-                    ? 'bg-slate-900 text-white shadow-2xs'
-                    : 'bg-white/80 text-slate-600 border border-white/80'
-                }`}
-              >
-                Barcha yuklar
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setFilterLoadType('yigma_yuk')}
-                className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 flex items-center gap-1 ${
-                  filterLoadType === 'yigma_yuk'
-                    ? 'bg-amber-600 text-white shadow-2xs'
-                    : 'bg-white/80 text-slate-600 border border-white/80'
-                }`}
-              >
-                <span>📦 Yig'ma yuklar (LTL)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setFilterLoadType('tolik_mashina')}
-                className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 flex items-center gap-1 ${
-                  filterLoadType === 'tolik_mashina'
-                    ? 'bg-sky-700 text-white shadow-2xs'
-                    : 'bg-white/80 text-slate-600 border border-white/80'
-                }`}
-              >
-                <span>🚚 To'liq fura (FTL)</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Yuklar ro'yxati */}
+        <div className="space-y-2.5">
           {filteredCargos.length === 0 ? (
-            <div className="p-8 text-center bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/85 shadow-lg space-y-2">
-              <p className="text-sm font-black text-slate-800">Ushbu parametr bo'yicha yuk topilmadi</p>
-              <p className="text-xs text-slate-500 font-medium">Boshqa shahar nomini qidiring yoki filterni tozalang.</p>
+            <div className="p-8 text-center bg-white rounded-3xl border border-slate-200/90 space-y-2">
+              <p className="text-sm font-bold text-slate-800">Ushbu shahar bo'yicha yuk topilmadi</p>
+              <p className="text-xs text-slate-500">Qidiruvni tozalab ko'ring.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {filteredCargos.map(({ cargo, distanceToPickupKm }) => (
-                <div
-                  key={cargo.id}
-                  onClick={() => onSelectCargo(cargo, distanceToPickupKm)}
-                  className="p-4 xs:p-5 bg-white/85 backdrop-blur-2xl rounded-[30px] border border-white/95 shadow-[0_12px_32px_-4px_rgba(15,23,42,0.05)] hover:border-sky-400/80 cursor-pointer transition-all space-y-3 group"
-                >
-                  {/* Top Bar: Category & Price */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-500/15 px-2.5 py-1 rounded-full border border-sky-200/60">
-                        {cargo.category}
-                      </span>
-                      <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full border ${
-                        cargo.loadType === 'yigma_yuk' 
-                          ? 'bg-amber-500/15 text-amber-900 border-amber-300/60' 
-                          : 'bg-teal-500/15 text-teal-900 border-teal-300/60'
-                      }`}>
-                        {cargo.loadType === 'yigma_yuk' ? "📦 Yig'ma (LTL)" : "🚚 Butun fura (FTL)"}
-                      </span>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="text-sm xs:text-base font-black text-slate-900 block leading-tight">
-                        {formatMoneyUz(cargo.priceUzs)}
-                      </span>
-                      {distanceToPickupKm !== undefined && (
-                        <span className="text-[10px] text-sky-700 font-bold">
-                          📍 {distanceToPickupKm} km yaqin
-                        </span>
-                      )}
-                    </div>
+            filteredCargos.map(({ cargo, distanceToPickupKm }) => (
+              <div
+                key={cargo.id}
+                onClick={() => onSelectCargo(cargo, distanceToPickupKm)}
+                className="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:border-slate-300 cursor-pointer transition-all space-y-2.5"
+              >
+                {/* Yo'nalish va Narx */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-sm font-bold text-slate-900">
+                    <span>{cargo.pickupLocation.city}</span>
+                    <span className="text-slate-400 font-normal">➔</span>
+                    <span>{cargo.deliveryLocation.city}</span>
                   </div>
+                  <span className="text-sm font-black text-slate-900">
+                    {formatMoneyUz(cargo.priceUzs)}
+                  </span>
+                </div>
 
-                  {/* Cargo Title */}
-                  <h3 className="text-sm font-black text-slate-900 group-hover:text-sky-800 transition-colors">
-                    {cargo.title}
-                  </h3>
+                {/* Yuk tafsilotlari */}
+                <div className="text-xs text-slate-500 truncate">
+                  <span className="text-slate-700 font-medium">{cargo.title}</span>
+                  <span className="mx-1.5">•</span>
+                  <span>{cargo.weightKg >= 1000 ? `${(cargo.weightKg / 1000).toFixed(1)} t` : `${cargo.weightKg} kg`}</span>
+                  <span className="mx-1.5">•</span>
+                  <span>{cargo.distanceKm} km</span>
+                  {distanceToPickupKm !== undefined && (
+                    <>
+                      <span className="mx-1.5">•</span>
+                      <span className="text-emerald-700 font-semibold">{distanceToPickupKm} km yaqin</span>
+                    </>
+                  )}
+                </div>
 
-                  {/* Route Visual Timeline */}
-                  <div className="p-3 bg-slate-50/80 rounded-2xl border border-slate-100/90 space-y-2">
-                    <div className="flex items-start gap-2.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-sky-600 ring-4 ring-sky-100 shrink-0 mt-1" />
-                      <div className="flex-1 min-w-0">
-                        <strong className="text-xs font-black text-slate-800 truncate block">{cargo.pickupLocation.city}</strong>
-                        <p className="text-[10px] text-slate-500 truncate">{cargo.pickupLocation.address || "Yuklash manzili"}</p>
-                      </div>
-                    </div>
-
-                    <div className="pl-1 flex items-center gap-2">
-                      <div className="w-0.5 h-4 bg-gradient-to-b from-sky-500 to-rose-500 ml-1 rounded-full" />
-                      <span className="text-[9px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200/60">
-                        {cargo.distanceKm} km
-                      </span>
-                    </div>
-
-                    <div className="flex items-start gap-2.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-rose-600 ring-4 ring-rose-100 shrink-0 mt-1" />
-                      <div className="flex-1 min-w-0">
-                        <strong className="text-xs font-black text-slate-800 truncate block">{cargo.deliveryLocation.city}</strong>
-                        <p className="text-[10px] text-slate-500 truncate">{cargo.deliveryLocation.address || "Yetkazish manzili"}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Specs & Actions Footer */}
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs flex-wrap gap-2">
-                    <div className="flex items-center gap-1.5 text-slate-600 font-bold text-[11px]">
-                      <span className="bg-slate-100 px-2 py-0.5 rounded-md">
-                        {(cargo.weightKg / 1000).toFixed(1)} t
-                      </span>
-                      <span className="bg-slate-100 px-2 py-0.5 rounded-md">
-                        {cargo.volumeM3} m³
-                      </span>
-                      <span className="text-slate-400 font-medium">• {cargo.pickupDate}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`tel:${cargo.ownerPhone}`}
-                        onClick={e => e.stopPropagation()}
-                        className="px-3.5 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-1 shadow-2xs active:scale-95 transition-all"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>Qo'ng'iroq</span>
-                      </a>
-
-                      <button
-                        type="button"
-                        className="px-4 py-1.5 rounded-full bg-sky-700 hover:bg-sky-800 text-white font-black text-xs flex items-center gap-1.5 shadow-md shadow-sky-700/20 active:scale-95 transition-all"
-                      >
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Taklif berish</span>
-                      </button>
-                    </div>
+                {/* Amallar */}
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                  <span className="text-slate-400 truncate max-w-[150px]">
+                    {cargo.pickupLocation.address || 'Yuklash joyi'}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`tel:${cargo.ownerPhone}`}
+                      onClick={e => e.stopPropagation()}
+                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold flex items-center gap-1"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>Qo'ng'iroq</span>
+                    </a>
+                    <button
+                      type="button"
+                      className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold border border-slate-200/90 shadow-2xs"
+                    >
+                      Taklif berish
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))
           )}
         </div>
       )}
 
-      {/* 4. TAB 2: BO'SH MASHINALAR (POPUTNIY REYSLAR) */}
+      {/* 5. TAB 2: BO'SH MASHINALAR (POPUTNIY REYSLAR) */}
       {activeMarketTab === 'trips' && (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {carrierTrips.length === 0 ? (
-            <div className="p-8 text-center bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/85 shadow-lg space-y-3">
-              <div className="w-12 h-12 mx-auto rounded-2xl bg-sky-500/15 text-sky-700 flex items-center justify-center">
-                <Truck className="w-6 h-6" />
-              </div>
-              <p className="text-sm font-black text-slate-800">Hozircha bo'sh mashinalar yo'q</p>
-              <p className="text-xs text-slate-500 font-medium">O'zingizning bo'sh reysingizni e'lon qiling.</p>
+            <div className="p-8 text-center bg-white/80 backdrop-blur-2xl rounded-3xl border border-white/90 space-y-2">
+              <p className="text-sm font-bold text-slate-800">Hozircha bo'sh reyslar e'lon qilinmagan</p>
               <button
                 type="button"
                 onClick={onOpenPostTrip}
-                className="px-4 py-2 bg-sky-600 text-white font-extrabold text-xs rounded-2xl shadow-xs"
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs rounded-xl border border-slate-200 shadow-2xs"
               >
                 + Bo'sh reys e'lon qilish
               </button>
@@ -306,72 +192,36 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
             carrierTrips.map(trip => (
               <div
                 key={trip.id}
-                className="p-4 bg-white/80 backdrop-blur-xl rounded-3xl border border-white/85 shadow-lg space-y-3"
+                className="p-4 bg-white/80 backdrop-blur-2xl rounded-2xl border border-white/90 shadow-2xs space-y-2.5"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-black text-slate-900">{trip.driverName}</h3>
-                    <div className="text-xs text-slate-400 font-medium">{trip.vehicleModel} ({trip.vehiclePlate})</div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <div className="text-right">
-                      <span className="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-900 border border-emerald-300/80">
-                        {trip.availableCapacityTon} t bo'sh joy
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (window.confirm("Ushbu reys o'chirilsinmi?")) {
-                          storageService.deleteCarrierTrip(trip.id);
-                        }
-                      }}
-                      className="p-1 text-slate-300 hover:text-rose-600 transition-colors"
-                      title="O'chirish"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-white/70 rounded-2xl border border-white/80 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5 font-black text-slate-800">
+                  <div className="flex items-center gap-1.5 text-sm font-bold text-slate-900">
                     <span>{trip.departureLocation.city}</span>
-                    <span className="text-teal-600 font-extrabold">➔</span>
+                    <span className="text-slate-400 font-normal">➔</span>
                     <span>{trip.destinationLocation.city}</span>
                   </div>
-
-                  <span className="font-black text-teal-800">
-                    {formatMoneyUz(trip.pricePerTonUzs)} / tonna
+                  <span className="text-xs font-semibold text-slate-500 font-mono">
+                    {trip.departureDate}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-[11px] text-slate-500 font-medium">
-                    Jo'nash: {trip.departureDate} ({trip.departureTimeWindow})
-                  </span>
+                <div className="text-xs text-slate-500">
+                  <span className="font-semibold text-slate-800">{trip.driverName}</span>
+                  <span className="mx-1.5">•</span>
+                  <span>{trip.vehicleModel}</span>
+                  <span className="mx-1.5">•</span>
+                  <span>Bo'sh sig'im: <strong>{trip.availableCapacityTon} t</strong></span>
+                </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <a
-                      href={`https://t.me/${(trip.driverTelegram || trip.driverPhone.replace(/[^0-9]/g, '')).replace(/^@/, '')}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-sky-500/15 text-sky-800 border border-sky-200/80 font-bold text-[11px] active:scale-95 transition-all shadow-2xs"
-                    >
-                      <Send className="w-3 h-3 text-sky-600" />
-                      <span>Telegram</span>
-                    </a>
-
-                    <a
-                      href={`tel:${trip.driverPhone}`}
-                      className="flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[11px] active:scale-95 transition-all shadow-md shadow-teal-700/20"
-                    >
-                      <Phone className="w-3 h-3" />
-                      <span>Qo'ng'iroq</span>
-                    </a>
-                  </div>
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                  <span className="text-slate-500">Maks. {trip.maxShippersCount || 3} tagacha yuk oladi</span>
+                  <a
+                    href={`tel:${trip.driverPhone}`}
+                    className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold border border-slate-200 flex items-center gap-1 shadow-2xs"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Aloqa</span>
+                  </a>
                 </div>
               </div>
             ))

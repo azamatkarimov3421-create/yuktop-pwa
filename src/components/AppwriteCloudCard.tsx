@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { 
   Cloud, 
   Database, 
-  Key, 
   Check, 
   Copy, 
-  Activity, 
-  HardDrive, 
   Server, 
   RefreshCw, 
-  ExternalLink,
   ChevronDown,
   ChevronUp,
-  ShieldCheck,
   Zap
 } from 'lucide-react';
 import { 
@@ -35,7 +30,6 @@ export const AppwriteCloudCard: React.FC<AppwriteCloudCardProps> = ({
 }) => {
   const [config, setConfig] = useState(getStoredAppwriteConfig());
   const [copiedProject, setCopiedProject] = useState(false);
-  const [copiedDb, setCopiedDb] = useState(false);
   const [testingPing, setTestingPing] = useState(false);
   const [pingResult, setPingResult] = useState<{ success: boolean; message: string; latencyMs?: number } | null>(null);
   
@@ -46,7 +40,6 @@ export const AppwriteCloudCard: React.FC<AppwriteCloudCardProps> = ({
   const [databaseIdInput, setDatabaseIdInput] = useState(config.databaseId || DEFAULT_APPWRITE_DATABASE_ID);
   const [saveNote, setSaveNote] = useState(false);
 
-  // Auto-check ping on mount
   useEffect(() => {
     let isMounted = true;
     testAppwriteConnection(config.endpoint, config.projectId).then(res => {
@@ -57,15 +50,10 @@ export const AppwriteCloudCard: React.FC<AppwriteCloudCardProps> = ({
     return () => { isMounted = false; };
   }, [config.endpoint, config.projectId]);
 
-  const handleCopy = (text: string, type: 'project' | 'db') => {
+  const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    if (type === 'project') {
-      setCopiedProject(true);
-      setTimeout(() => setCopiedProject(false), 2000);
-    } else {
-      setCopiedDb(true);
-      setTimeout(() => setCopiedDb(false), 2000);
-    }
+    setCopiedProject(true);
+    setTimeout(() => setCopiedProject(false), 2000);
   };
 
   const handleTestPing = async () => {
@@ -86,162 +74,77 @@ export const AppwriteCloudCard: React.FC<AppwriteCloudCardProps> = ({
   };
 
   return (
-    <div className="p-5 bg-white/85 backdrop-blur-2xl rounded-[32px] border border-white/90 shadow-[0_16px_40px_-8px_rgba(15,23,42,0.08)] space-y-4 transition-all">
-      {/* 1. Header with Appwrite Brand and Live Pulsing Status */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100/80">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-500 via-pink-600 to-rose-700 text-white flex items-center justify-center font-black shadow-md shadow-rose-500/20 border border-white/30 shrink-0">
-            <Cloud className="w-6 h-6 stroke-[2.2]" />
+    <div className="p-4 bg-white rounded-2xl border border-slate-200/90 shadow-2xs space-y-3">
+      {/* 1. Header with Appwrite Status */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700">
+            <Cloud className="w-4 h-4" />
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <h2 className="text-sm font-black text-slate-900 leading-tight">
-                Appwrite Cloud Hub
-              </h2>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-900 text-white">
-                yuktop
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-500 font-semibold mt-0.5 flex items-center gap-1.5">
-              <Server className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Frankfurt (EU) • cloud.appwrite.io</span>
+            <h2 className="text-xs font-bold text-slate-900 leading-tight">
+              Appwrite Cloud Baza
+            </h2>
+            <p className="text-[11px] text-slate-500">
+              Frankfurt (EU) • loyiha: yuktop
             </p>
           </div>
         </div>
 
-        {/* Live Status Badge */}
-        <div className="flex flex-col items-end gap-1">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping" />
-            <span>Bog'langan</span>
-          </span>
-          {pingResult?.latencyMs ? (
-            <span className="text-[10px] font-mono font-bold text-slate-400">
-              ⚡ {pingResult.latencyMs} ms
-            </span>
-          ) : null}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block" />
+          <span>Faol {pingResult?.latencyMs ? `(${pingResult.latencyMs} ms)` : ''}</span>
         </div>
       </div>
 
-      {/* 2. Bento Stats: Connection Details & Codes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-        {/* Project ID Box with 1-click Copy */}
-        <div className="p-3 bg-slate-50/80 rounded-2xl border border-slate-200/70 hover:bg-white transition-all space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <Database className="w-3.5 h-3.5 text-rose-500" />
-              Loyiha Kodi (Project ID)
-            </span>
-            <button
-              type="button"
-              onClick={() => handleCopy(config.projectId, 'project')}
-              className="text-[11px] font-extrabold text-teal-700 hover:text-teal-900 flex items-center gap-1 px-2 py-0.5 rounded-md hover:bg-teal-50 transition-all"
-              title="Kodni nusxalash"
-            >
-              {copiedProject ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="text-emerald-700">Nusxalandi!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>Nusxalash</span>
-                </>
-              )}
-            </button>
-          </div>
-          <div className="font-mono text-xs font-black text-slate-800 break-all select-all pt-0.5">
-            {config.projectId}
-          </div>
-          <div className="text-[10px] text-slate-500">
-            Loyiha nomi: <strong className="text-slate-700">Personal Projects / yuktop</strong>
-          </div>
+      {/* 2. Compact Project ID and Storage Info */}
+      <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+        <div>
+          <span className="text-[10px] text-slate-400 font-medium block">Loyiha kodi (Project ID):</span>
+          <code className="font-mono font-bold text-slate-800 text-xs">{config.projectId}</code>
         </div>
-
-        {/* Database & API Keys Status Box */}
-        <div className="p-3 bg-slate-50/80 rounded-2xl border border-slate-200/70 hover:bg-white transition-all space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <Key className="w-3.5 h-3.5 text-amber-500" />
-              API Kalitlar & Baza ID
-            </span>
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-              2 ta kalit faol
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-xs pt-0.5">
-            <span className="text-slate-600 font-semibold">Baza ID:</span>
-            <code className="font-mono font-black text-slate-900 bg-white px-2 py-0.5 rounded-lg border border-slate-200">
-              {config.databaseId}
-            </code>
-          </div>
-          <div className="text-[10px] text-slate-500 flex items-center justify-between pt-0.5">
-            <span>Admin Key (113 scopes)</span>
-            <span className="text-emerald-600 font-bold">Faol ✓</span>
-          </div>
-          <div className="text-[10px] text-slate-500 flex items-center justify-between">
-            <span>yuktop kalit (114 scopes)</span>
-            <span className="text-emerald-600 font-bold">Faol ✓</span>
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={() => handleCopy(config.projectId)}
+          className="text-[11px] font-bold text-slate-700 hover:text-slate-900 px-2 py-1 rounded-md hover:bg-slate-200/60 transition-all flex items-center gap-1"
+        >
+          {copiedProject ? (
+            <>
+              <Check className="w-3 h-3 text-emerald-600" />
+              <span className="text-emerald-700">Nusxalandi</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3" />
+              <span>Nusxa olish</span>
+            </>
+          )}
+        </button>
       </div>
 
-      {/* 3. Storage and Capacity Metrics (Qancha joy bor, qancha ma'lumot bor) */}
-      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-teal-500/10 via-sky-500/10 to-teal-500/10 border border-teal-200/80 space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-teal-700" />
-            <span className="text-xs font-black text-slate-800">Bulutli Xotira & Baza Sig'imi</span>
-          </div>
-          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-teal-700 text-white shadow-2xs">
-            75,000 Bepul So'rov / oy
-          </span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 pt-1">
-          <div className="p-2 bg-white/80 rounded-xl border border-white/90 text-center">
-            <div className="text-xs font-black text-teal-900">{cargosCount}</div>
-            <div className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Yuklar</div>
-          </div>
-
-          <div className="p-2 bg-white/80 rounded-xl border border-white/90 text-center">
-            <div className="text-xs font-black text-sky-900">{tripsCount}</div>
-            <div className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Reyslar</div>
-          </div>
-
-          <div className="p-2 bg-white/80 rounded-xl border border-white/90 text-center">
-            <div className="text-xs font-black text-emerald-900">2 GB</div>
-            <div className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">Bo'sh Joy</div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between text-[10px] text-slate-600 pt-1">
-          <span className="flex items-center gap-1 font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
-            <span>Xavfsizlik: TLS 1.3 shifrlash & Role Scopes</span>
-          </span>
-          <span className="font-bold text-teal-800">Sinxron: Avtomatik</span>
-        </div>
+      {/* 3. Simple Stats Line */}
+      <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
+        <span>📦 {cargosCount} ta yuk • 🚚 {tripsCount} ta reys</span>
+        <span>☁️ 2 GB bo'sh joy • 75k kvota</span>
       </div>
 
-      {/* 4. Action Buttons: Ping Test and Config Settings */}
+      {/* 4. Actions: Ping and Settings */}
       <div className="flex items-center gap-2 pt-1">
         <button
           type="button"
           onClick={handleTestPing}
           disabled={testingPing}
-          className="flex-1 py-2.5 px-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] disabled:opacity-50"
+          className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50 shadow-2xs"
         >
           {testingPing ? (
             <>
-              <RefreshCw className="w-3.5 h-3.5 animate-spin text-teal-300" />
+              <RefreshCw className="w-3 h-3 animate-spin" />
               <span>Tekshirilmoqda...</span>
             </>
           ) : (
             <>
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
-              <span>Aloqani tekshirish (Ping)</span>
+              <Zap className="w-3 h-3" />
+              <span>Aloqani tekshirish</span>
             </>
           )}
         </button>
@@ -249,65 +152,34 @@ export const AppwriteCloudCard: React.FC<AppwriteCloudCardProps> = ({
         <button
           type="button"
           onClick={() => setShowEditForm(!showEditForm)}
-          className="py-2.5 px-3 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-extrabold flex items-center gap-1.5 transition-all shadow-2xs active:scale-[0.98]"
-          title="Sozlamalarni o'zgartirish"
+          className="py-2 px-3 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1 transition-all"
         >
           <span>Sozlash</span>
-          {showEditForm ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          {showEditForm ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         </button>
       </div>
 
-      {/* Ping Status Alert */}
-      {pingResult && (
-        <div className={`p-3 rounded-2xl text-xs font-bold border transition-all ${
-          pingResult.success 
-            ? 'bg-emerald-50/90 border-emerald-200 text-emerald-900' 
-            : 'bg-rose-50/90 border-rose-200 text-rose-900'
-        }`}>
-          {pingResult.message}
-        </div>
-      )}
-
-      {/* 5. Custom Appwrite Config Edit Form (Accordion) */}
+      {/* Custom Edit Form (if expanded) */}
       {showEditForm && (
-        <form onSubmit={handleSaveCustomConfig} className="p-3.5 bg-slate-50/95 rounded-2xl border border-slate-200 space-y-3 text-xs animate-in slide-in-from-top duration-200">
-          <h3 className="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
-            <Server className="w-4 h-4 text-teal-600" />
-            <span>Appwrite Ulanish Sozlamalari</span>
-          </h3>
-
+        <form onSubmit={handleSaveCustomConfig} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs pt-3">
           <div>
-            <span className="text-[11px] text-slate-500 font-semibold block mb-1">Server Endpoint URL:</span>
+            <span className="text-[11px] text-slate-500 font-medium block mb-1">Server Endpoint:</span>
             <input
               type="url"
               value={endpointInput}
               onChange={e => setEndpointInput(e.target.value)}
-              placeholder="https://cloud.appwrite.io/v1"
-              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-mono text-xs focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 font-mono text-xs focus:outline-none"
               required
             />
           </div>
 
           <div>
-            <span className="text-[11px] text-slate-500 font-semibold block mb-1">Project ID (Loyiha Kodi):</span>
+            <span className="text-[11px] text-slate-500 font-medium block mb-1">Project ID:</span>
             <input
               type="text"
               value={projectIdInput}
               onChange={e => setProjectIdInput(e.target.value)}
-              placeholder="6ae2ea99001accd5eab5"
-              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-mono text-xs focus:ring-2 focus:ring-teal-600 focus:outline-none"
-              required
-            />
-          </div>
-
-          <div>
-            <span className="text-[11px] text-slate-500 font-semibold block mb-1">Database ID (Baza Nomi):</span>
-            <input
-              type="text"
-              value={databaseIdInput}
-              onChange={e => setDatabaseIdInput(e.target.value)}
-              placeholder="yuktop_db"
-              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 font-mono text-xs focus:ring-2 focus:ring-teal-600 focus:outline-none"
+              className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 font-mono text-xs focus:outline-none"
               required
             />
           </div>
@@ -320,24 +192,24 @@ export const AppwriteCloudCard: React.FC<AppwriteCloudCardProps> = ({
                 setProjectIdInput(DEFAULT_APPWRITE_PROJECT_ID);
                 setDatabaseIdInput(DEFAULT_APPWRITE_DATABASE_ID);
               }}
-              className="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-300"
+              className="px-2.5 py-1 rounded-lg bg-slate-200 text-slate-700 text-xs font-medium"
             >
-              Standartga qaytarish
+              Standart
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow-xs"
+              className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200 text-xs font-bold transition-colors"
             >
-              Saqlash va Ulanish
+              Saqlash
             </button>
           </div>
         </form>
       )}
 
       {saveNote && (
-        <div className="p-2.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center gap-2">
-          <Check className="w-4 h-4 text-emerald-700" />
-          <span>Appwrite sozlamalari yangilandi!</span>
+        <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-1.5">
+          <Check className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Sozlamalar saqlandi!</span>
         </div>
       )}
     </div>

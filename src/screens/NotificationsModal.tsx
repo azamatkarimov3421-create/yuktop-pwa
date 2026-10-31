@@ -42,7 +42,7 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/45 backdrop-blur-md p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/25 backdrop-blur-md p-0 sm:p-4">
       <div className="w-full max-w-md bg-white/88 backdrop-blur-2xl rounded-t-[32px] sm:rounded-[32px] p-5 shadow-2xl border border-white/85 animate-in slide-in-from-bottom duration-200 max-h-[85vh] flex flex-col">
         <div className="pt-1 pb-1 flex justify-center sm:hidden">
           <div className="w-12 h-1.5 bg-slate-300/60 rounded-full" />

@@ -144,7 +144,7 @@ export const PostTripModal: React.FC<PostTripModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/45 backdrop-blur-md p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/25 backdrop-blur-md p-0 sm:p-4">
       <div className="w-full max-w-xl bg-white/88 backdrop-blur-2xl rounded-t-[32px] sm:rounded-[32px] max-h-[92dvh] overflow-y-auto shadow-2xl border border-white/85 animate-in slide-in-from-bottom duration-200">
         {/* Mobile Grab Handle */}
         <div className="pt-3 pb-1 flex justify-center sm:hidden">

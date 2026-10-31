@@ -35,7 +35,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             onClick={() => onTabChange(activeRole === 'yuk_beruvchi' ? 'home' : 'marketplace')}
             className={`flex-1 relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
               isHomeOrMarket
-                ? 'bg-slate-900 text-white shadow-md'
+                ? 'bg-white text-slate-900 border border-slate-200/80 shadow-xs font-black'
                 : 'text-slate-400 hover:text-slate-700'
             }`}
           >
@@ -44,7 +44,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             ) : (
               <Truck className="w-5 h-5 stroke-[2.2]" />
             )}
-            <span className="text-[10px] font-extrabold mt-1 tracking-tight">
+            <span className="text-[10px] mt-1 tracking-tight">
               {activeRole === 'yuk_beruvchi' ? 'E\'lonlarim' : 'Bozor'}
             </span>
           </button>
@@ -55,14 +55,14 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             onClick={() => onTabChange('orders')}
             className={`flex-1 relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
               currentTab === 'orders'
-                ? 'bg-slate-900 text-white shadow-md'
+                ? 'bg-white text-slate-900 border border-slate-200/80 shadow-xs font-black'
                 : 'text-slate-400 hover:text-slate-700'
             }`}
           >
             <ClipboardList className="w-5 h-5 stroke-[2.2]" />
-            <span className="text-[10px] font-extrabold mt-1 tracking-tight">Buyurtmalar</span>
+            <span className="text-[10px] mt-1 tracking-tight">Buyurtmalar</span>
             {activeOrdersCount > 0 && (
-              <span className="absolute top-1.5 right-1/4 w-2 h-2 rounded-full bg-teal-400 ring-2 ring-white animate-pulse" />
+              <span className="absolute top-1.5 right-1/4 w-2 h-2 rounded-full bg-slate-400 ring-2 ring-white" />
             )}
           </button>
 
@@ -72,12 +72,12 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             onClick={() => onTabChange('map')}
             className={`flex-1 relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
               currentTab === 'map'
-                ? 'bg-slate-900 text-white shadow-md'
+                ? 'bg-white text-slate-900 border border-slate-200/80 shadow-xs font-black'
                 : 'text-slate-400 hover:text-slate-700'
             }`}
           >
             <Map className="w-5 h-5 stroke-[2.2]" />
-            <span className="text-[10px] font-extrabold mt-1 tracking-tight">Xarita</span>
+            <span className="text-[10px] mt-1 tracking-tight">Xarita</span>
           </button>
 
           {/* Tab 4: Profil */}
@@ -86,12 +86,12 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             onClick={() => onTabChange('profile')}
             className={`flex-1 relative flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition-all duration-200 ${
               currentTab === 'profile'
-                ? 'bg-slate-900 text-white shadow-md'
+                ? 'bg-white text-slate-900 border border-slate-200/80 shadow-xs font-black'
                 : 'text-slate-400 hover:text-slate-700'
             }`}
           >
             <User className="w-5 h-5 stroke-[2.2]" />
-            <span className="text-[10px] font-extrabold mt-1 tracking-tight">Profil</span>
+            <span className="text-[10px] mt-1 tracking-tight">Profil</span>
           </button>
         </div>
       </div>

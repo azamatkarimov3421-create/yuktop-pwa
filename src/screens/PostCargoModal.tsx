@@ -201,7 +201,7 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/45 backdrop-blur-md p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/25 backdrop-blur-md p-0 sm:p-4">
       <div className="w-full max-w-xl bg-white/88 backdrop-blur-2xl rounded-t-[32px] sm:rounded-[32px] max-h-[92dvh] overflow-y-auto shadow-2xl border border-white/85 animate-in slide-in-from-bottom duration-200">
         {/* Grab Handle */}
         <div className="pt-3 pb-1 flex justify-center sm:hidden">
@@ -326,7 +326,7 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
                     }`}
                   >
                     <img src={img.url} alt={img.name} className="w-full h-14 object-cover" />
-                    <span className="absolute bottom-0 inset-x-0 bg-black/60 text-white text-[8px] p-0.5 truncate text-center font-medium">
+                    <span className="absolute bottom-0 inset-x-0 bg-white/85 backdrop-blur-xs text-slate-800 text-[8px] p-0.5 truncate text-center font-bold">
                       {img.category}
                     </span>
                   </div>
