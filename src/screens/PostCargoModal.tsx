@@ -806,7 +806,34 @@ export const PostCargoModal: React.FC<PostCargoModalProps> = ({
             </div>
 
             <div>
-              <span className="text-[11px] text-slate-500 mb-1 block font-medium">Qo'shimcha talablar:</span>
+              <span className="text-[11px] text-slate-500 mb-1 block font-medium">Qo'shimcha talablar va qulayliklar:</span>
+              {/* Tezkor qulaylik teglari */}
+              <div className="flex items-center gap-1.5 flex-wrap pb-1.5">
+                {[
+                  "Gruzchik (ortuvchi) kerak",
+                  "Kran / Kare mavjud",
+                  "Tentli fura",
+                  "Muzlatgich (+2°C)",
+                  "Ehtiyotkorlik bilan tashish"
+                ].map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      if (!specialNotes.includes(tag)) {
+                        setSpecialNotes(prev => prev ? `${prev}, ${tag}` : tag);
+                      }
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all ${
+                      specialNotes.includes(tag)
+                        ? 'bg-slate-200 text-slate-900 border-slate-300'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    + {tag}
+                  </button>
+                ))}
+              </div>
               <input
                 type="text"
                 value={specialNotes}
