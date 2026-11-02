@@ -518,6 +518,31 @@ class StorageService {
     }
   }
 
+  public updateOrderPayment(
+    orderId: string, 
+    provider: 'Click' | 'Payme' | 'Naqd pul' | 'Hisob-raqam', 
+    status: 'kutilmoqda' | 'tolandi' | 'xoldlangan'
+  ) {
+    const order = this.getOrderById(orderId);
+    if (!order) return;
+
+    order.paymentStatus = status;
+    order.paymentProvider = provider;
+    if (status === 'tolandi') {
+      order.paidAt = new Date().toISOString();
+    }
+    order.updatedAt = new Date().toISOString();
+
+    this.addNotification({
+      title: 'To\'lov muvaffaqiyatli qabul qilindi',
+      message: `"${order.orderCode}" buyurtmasi uchun ${provider} orqali to'lov ${status === 'tolandi' ? 'amalga oshirildi' : 'xoldlandi'}.`,
+      type: 'order',
+      relatedOrderId: order.id
+    });
+
+    this.save();
+  }
+
   public updateDriverLocation(orderId: string, lat: number, lng: number, speedKmH = 65) {
     const order = this.getOrderById(orderId);
     if (!order) return;

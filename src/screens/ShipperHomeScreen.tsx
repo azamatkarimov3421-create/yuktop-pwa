@@ -8,7 +8,9 @@ import {
   Truck, 
   ChevronRight, 
   Trash2,
-  MapPin
+  MapPin,
+  TrendingUp,
+  Sparkles
 } from 'lucide-react';
 
 interface ShipperHomeScreenProps {
@@ -54,6 +56,43 @@ export const ShipperHomeScreen: React.FC<ShipperHomeScreenProps> = ({
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>Yangi yuk e'lon qilish</span>
         </button>
+      </div>
+
+      {/* Bozor narxlari indeksi (Yo'nalishlar bo'yicha tavsiyaviy stavkalar) */}
+      <div className="p-4 bg-white/80 backdrop-blur-2xl rounded-3xl border border-white/90 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-teal-50 border border-teal-200/60 flex items-center justify-center text-teal-800">
+              <TrendingUp className="w-3.5 h-3.5" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-900">Bozor stavkalari indeksi</h3>
+              <p className="text-[10px] text-slate-500">O'rtacha fura (20 t) yuk stavkalari</p>
+            </div>
+          </div>
+          <span className="text-[9px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200/60">
+            Joriy hafta
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+            <span className="text-[10px] text-slate-500 block truncate">Toshkent ➔ Samarqand</span>
+            <strong className="text-xs font-black text-slate-900 block mt-0.5 font-mono">3.8 – 4.5 mln</strong>
+          </div>
+          <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+            <span className="text-[10px] text-slate-500 block truncate">Toshkent ➔ Farg'ona</span>
+            <strong className="text-xs font-black text-slate-900 block mt-0.5 font-mono">4.0 – 4.8 mln</strong>
+          </div>
+          <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+            <span className="text-[10px] text-slate-500 block truncate">Toshkent ➔ Buxoro</span>
+            <strong className="text-xs font-black text-slate-900 block mt-0.5 font-mono">5.0 – 6.2 mln</strong>
+          </div>
+          <div className="p-2.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+            <span className="text-[10px] text-slate-500 block truncate">Toshkent ➔ Nukus</span>
+            <strong className="text-xs font-black text-slate-900 block mt-0.5 font-mono">8.2 – 10.5 mln</strong>
+          </div>
+        </div>
       </div>
 
       {/* 2. Yo'ldagi Faol Buyurtmalar (Agar mavjud bo'lsa) */}

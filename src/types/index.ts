@@ -153,6 +153,9 @@ export interface Order {
   durationMinutes: number;
   status: OrderStatus;
   carrierGpsEnabled: boolean;
+  paymentStatus?: 'kutilmoqda' | 'tolandi' | 'xoldlangan';
+  paymentProvider?: 'Click' | 'Payme' | 'Naqd pul' | 'Hisob-raqam';
+  paidAt?: string;
   driverCurrentLocation: {
     lat: number;
     lng: number;

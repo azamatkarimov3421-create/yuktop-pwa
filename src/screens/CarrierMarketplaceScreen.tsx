@@ -9,7 +9,12 @@ import {
   Plus, 
   MapPin, 
   ChevronRight,
-  Trash2
+  Trash2,
+  Send,
+  Zap,
+  RotateCcw,
+  Fuel,
+  Package
 } from 'lucide-react';
 
 interface CarrierMarketplaceScreenProps {
@@ -27,11 +32,14 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
 }) => {
   const [activeMarketTab, setActiveMarketTab] = useState<'cargos' | 'trips'>('cargos');
   const [filterCity, setFilterCity] = useState('');
+  const [filterTag, setFilterTag] = useState<'all' | 'backhaul' | 'urgent' | 'partial' | 'high_price'>('all');
 
   const matchedItems = storageService.getMatchedCargosForCarrier();
   const carrierTrips = storageService.getCarrierTrips();
 
-  const filteredCargos = matchedItems.filter(item => {
+  const driverCity = vehicle?.currentLocation?.city || 'Toshkent';
+
+  let filteredCargos = matchedItems.filter(item => {
     const c = item.cargo;
     if (filterCity.trim()) {
       const q = filterCity.toLowerCase();
@@ -39,8 +47,27 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
       const matchDelivery = c.deliveryLocation.city.toLowerCase().includes(q);
       if (!matchPickup && !matchDelivery) return false;
     }
+
+    if (filterTag === 'backhaul') {
+      const isReturn = c.deliveryLocation.city.toLowerCase().includes(driverCity.toLowerCase()) ||
+                       c.pickupLocation.city.toLowerCase() !== driverCity.toLowerCase();
+      if (!isReturn) return false;
+    }
+
+    if (filterTag === 'urgent') {
+      if (c.urgency !== 'Shoshilinch (Bugun)') return false;
+    }
+
+    if (filterTag === 'partial') {
+      if (c.loadType !== 'yigma_yuk') return false;
+    }
+
     return true;
   });
+
+  if (filterTag === 'high_price') {
+    filteredCargos = [...filteredCargos].sort((a, b) => b.cargo.priceUzs - a.cargo.priceUzs);
+  }
 
   return (
     <div className="space-y-4 pb-32 max-w-md md:max-w-xl mx-auto px-3 xs:px-4 w-full animate-in fade-in duration-200">
@@ -104,6 +131,32 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
         />
       </div>
 
+      {/* 3.1 Smart Filtrlar (Barchasi, Qaytish reyslari, Shoshilinch, Yig'ma, Yuqori narx) */}
+      {activeMarketTab === 'cargos' && (
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
+          {[
+            { id: 'all', label: 'Barchasi' },
+            { id: 'backhaul', label: '🔄 Qaytish reyslari' },
+            { id: 'urgent', label: '⚡ Shoshilinch' },
+            { id: 'partial', label: '📦 Yig\'ma yuk' },
+            { id: 'high_price', label: '💰 Yuqori narx' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setFilterTag(tab.id as any)}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${
+                filterTag === tab.id
+                  ? 'bg-slate-200 text-slate-900 border-slate-300 shadow-2xs'
+                  : 'bg-white/80 text-slate-600 border-slate-200 hover:bg-slate-100'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* 4. TAB 1: YUKLAR BOZORI */}
       {activeMarketTab === 'cargos' && (
         <div className="space-y-2.5">
@@ -146,25 +199,42 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
                   )}
                 </div>
 
+                {/* Mini Yoqilg'i sarfi & Sof foyda prognozi */}
+                <div className="flex items-center gap-2 text-[10px] text-slate-500 pt-0.5 font-mono">
+                  <span>⛽ Yoqilg'i: ~{formatMoneyUz(Math.round(cargo.distanceKm * 3200))}</span>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-emerald-700 font-bold">Sof: ~{formatMoneyUz(Math.max(0, cargo.priceUzs - Math.round(cargo.distanceKm * 3200)))}</span>
+                </div>
+
                 {/* Amallar */}
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                  <span className="text-slate-400 truncate max-w-[150px]">
+                  <span className="text-slate-400 truncate max-w-[130px]">
                     {cargo.pickupLocation.address || 'Yuklash joyi'}
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <a
+                      href={`https://t.me/${(cargo.ownerTelegram || cargo.ownerPhone.replace(/[^0-9]/g, '')).replace(/^@/, '')}?text=${encodeURIComponent(`Assalomu alaykum! YUKTOP ilovasida "${cargo.pickupLocation.city} ➔ ${cargo.deliveryLocation.city}" (${cargo.title}) yukingizni ko'rdim. Mashinam tayyor.`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={e => e.stopPropagation()}
+                      className="p-1.5 rounded-lg border border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100 flex items-center justify-center transition-colors shadow-2xs"
+                      title="Telegramda yozish"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                    </a>
                     <a
                       href={`tel:${cargo.ownerPhone}`}
                       onClick={e => e.stopPropagation()}
-                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold flex items-center gap-1"
+                      className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold flex items-center gap-1 shadow-2xs"
                     >
                       <Phone className="w-3.5 h-3.5" />
                       <span>Qo'ng'iroq</span>
                     </a>
                     <button
                       type="button"
-                      className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold border border-slate-200/90 shadow-2xs"
+                      className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold border border-slate-200/90 shadow-2xs"
                     >
-                      Taklif berish
+                      Taklif
                     </button>
                   </div>
                 </div>

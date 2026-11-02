@@ -19,8 +19,11 @@ import {
   ArrowLeft,
   FileText,
   Send,
-  ExternalLink
+  ExternalLink,
+  CreditCard
 } from 'lucide-react';
+import { WaybillModal } from '../components/WaybillModal';
+import { PaymentCheckoutModal } from '../components/PaymentCheckoutModal';
 import confetti from 'canvas-confetti';
 
 interface OrderTrackingScreenProps {
@@ -41,6 +44,8 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
   onBack
 }) => {
   const isCarrier = activeRole === 'yuk_tashuvchi';
+  const [showWaybill, setShowWaybill] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const steps: { key: OrderStatus; label: string }[] = [
     { key: 'kelishildi', label: 'Kelishildi' },
@@ -209,6 +214,33 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
           </div>
         </div>
 
+        {/* Hujjatlar & To'lov Tugmalari (Waybill & Checkout) */}
+        <div className="flex items-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => setShowWaybill(true)}
+            className="flex-1 py-2.5 px-3 rounded-2xl bg-slate-100/90 hover:bg-slate-200/90 text-slate-900 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-200/80 shadow-2xs active:scale-95 transition-all"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Elektron Yuk Xati (TTN)</span>
+          </button>
+
+          {!isCarrier && (
+            <button
+              type="button"
+              onClick={() => setShowCheckout(true)}
+              className={`py-2.5 px-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 border transition-all shadow-2xs active:scale-95 ${
+                order.paymentStatus === 'tolandi'
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                  : 'bg-slate-100/90 hover:bg-slate-200/90 text-slate-900 border-slate-200/80'
+              }`}
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>{order.paymentStatus === 'tolandi' ? "To'langan ✓" : "To'lov qilish"}</span>
+            </button>
+          )}
+        </div>
+
         {/* Status Transition Action Buttons */}
         <div className="pt-1">
           {isCarrier ? (
@@ -286,6 +318,20 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
           )}
         </div>
       </div>
+
+      {/* Elektron Yuk Xati (TTN) Modal */}
+      <WaybillModal
+        order={order}
+        isOpen={showWaybill}
+        onClose={() => setShowWaybill(false)}
+      />
+
+      {/* Xavfsiz To'lov Oynasi */}
+      <PaymentCheckoutModal
+        order={order}
+        isOpen={showCheckout}
+        onClose={() => setShowCheckout(false)}
+      />
     </div>
   );
 };
