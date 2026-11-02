@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CargoItem, Bid, UserRole } from '../types';
 import { MapPicker } from '../components/MapPicker';
 import { StatusBadge } from '../components/StatusBadge';
-import { formatMoneyUz, formatDurationUz } from '../services/routingService';
+import { formatMoneyUz, formatDurationUz, getSafeTelegramHandle, getSafePhone } from '../services/routingService';
 import { 
   X, 
   MapPin, 
@@ -78,8 +78,8 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
       `📦 ${cargo.title} (${(cargo.weightKg / 1000).toFixed(1)} t • ${cargo.volumeM3} m³)\n` +
       `💰 Narxi: ${formatMoneyUz(cargo.priceUzs)} (${cargo.paymentMethod})\n` +
       `${cargo.urgency === 'Shoshilinch (Bugun)' ? '⚡ Shoshilinch!\n' : ''}` +
-      `📞 Tel: ${cargo.ownerPhone}\n` +
-      `💬 Telegram: @${(cargo.ownerTelegram || '').replace(/^@/, '')}\n\n` +
+      `📞 Tel: ${getSafePhone(cargo.ownerPhone)}\n` +
+      `💬 Telegram: @${getSafeTelegramHandle(cargo.ownerTelegram, cargo.ownerPhone)}\n\n` +
       `Batafsil ilovada ko'rish: https://yuktop-pwa.vercel.app/`;
 
     navigator.clipboard.writeText(shareText);
@@ -365,7 +365,7 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
 
             <div className="flex items-center gap-1.5">
               <a
-                href={`https://t.me/${(cargo.ownerTelegram || cargo.ownerPhone.replace(/[^0-9]/g, '')).replace(/^@/, '')}`}
+                href={`https://t.me/${getSafeTelegramHandle(cargo.ownerTelegram, cargo.ownerPhone)}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200 font-bold text-[11px] active:scale-95 transition-all shadow-2xs"
@@ -465,7 +465,7 @@ export const CargoDetailModal: React.FC<CargoDetailModalProps> = ({
                           </button>
 
                           <a
-                            href={`https://t.me/${(bid.driverTelegram || bid.driverPhone.replace(/[^0-9]/g, '')).replace(/^@/, '')}`}
+                            href={`https://t.me/${getSafeTelegramHandle(bid.driverTelegram, bid.driverPhone)}`}
                             target="_blank"
                             rel="noreferrer"
                             className="p-2 rounded-full bg-sky-50 text-sky-700 border border-sky-200"

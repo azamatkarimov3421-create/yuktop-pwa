@@ -26,12 +26,14 @@ interface WaybillModalProps {
 export const WaybillModal: React.FC<WaybillModalProps> = ({ order, isOpen, onClose }) => {
   const [copied, setCopied] = useState(false);
 
-  if (!isOpen) return null;
+  if (!isOpen || !order) return null;
 
-  const waybillNumber = `TTN-${order.orderCode}-${new Date(order.createdAt).getFullYear()}`;
+  const createdDate = order.createdAt ? new Date(order.createdAt) : new Date();
+  const validYear = isNaN(createdDate.getFullYear()) ? new Date().getFullYear() : createdDate.getFullYear();
+  const waybillNumber = `TTN-${order.orderCode || 'UZ'}-${validYear}`;
 
   const handleCopyLink = () => {
-    const text = `🚚 ELEKTRON YUK XATI (TTN)\nHujjat №: ${waybillNumber}\nYuk: ${order.cargoTitle}\nYo'nalish: ${order.pickupLocation.city} ➔ ${order.deliveryLocation.city}\nHaydovchi: ${order.driverName} (${order.vehiclePlate})\nYuk egasi: ${order.ownerName}\nSumma: ${formatMoneyUz(order.agreedPriceUzs)}\nStatus: ${order.status.toUpperCase()}\nTekshirish: https://yuktop-pwa.vercel.app/`;
+    const text = `🚚 ELEKTRON YUK XATI (TTN)\nHujjat №: ${waybillNumber}\nYuk: ${order.cargoTitle || ''}\nYo'nalish: ${order.pickupLocation?.city || ''} ➔ ${order.deliveryLocation?.city || ''}\nHaydovchi: ${order.driverName || ''} (${order.vehiclePlate || ''})\nYuk egasi: ${order.ownerName || ''}\nSumma: ${formatMoneyUz(order.agreedPriceUzs || 0)}\nStatus: ${(order.status || '').toUpperCase()}\nTekshirish: https://yuktop-pwa.vercel.app/`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
@@ -41,11 +43,11 @@ export const WaybillModal: React.FC<WaybillModalProps> = ({ order, isOpen, onClo
     const text = encodeURIComponent(
       `🚚 ELEKTRON YUK XATI (TTN)\n` +
       `№ ${waybillNumber}\n\n` +
-      `📍 Yo'nalish: ${order.pickupLocation.city} ➔ ${order.deliveryLocation.city}\n` +
-      `📦 Yuk: ${order.cargoTitle} (${(order.weightKg / 1000).toFixed(1)} t • ${order.volumeM3} m³)\n` +
-      `🚛 Haydovchi: ${order.driverName} (${order.vehicleModel}, ${order.vehiclePlate})\n` +
-      `📞 Aloqa: ${order.driverPhone}\n` +
-      `💰 Summa: ${formatMoneyUz(order.agreedPriceUzs)} (${order.paymentMethod})\n` +
+      `📍 Yo'nalish: ${order.pickupLocation?.city || ''} ➔ ${order.deliveryLocation?.city || ''}\n` +
+      `📦 Yuk: ${order.cargoTitle || ''} (${((order.weightKg || 0) / 1000).toFixed(1)} t • ${order.volumeM3 || 0} m³)\n` +
+      `🚛 Haydovchi: ${order.driverName || ''} (${order.vehicleModel || ''}, ${order.vehiclePlate || ''})\n` +
+      `📞 Aloqa: ${order.driverPhone || ''}\n` +
+      `💰 Summa: ${formatMoneyUz(order.agreedPriceUzs || 0)} (${order.paymentMethod || 'Naqd'})\n` +
       `✅ Holati: ${order.status === 'yetkazildi' ? 'Yetkazildi' : 'Yo\'lda / Faol'}\n\n` +
       `YUKTOP tizimi orqali rasmiylashtirilgan:`
     );
@@ -93,7 +95,7 @@ export const WaybillModal: React.FC<WaybillModalProps> = ({ order, isOpen, onClo
                   YUKTOP Tovarno-Transportnaya Nakladnaya
                 </h2>
                 <p className="text-[10px] text-slate-500 mt-0.5">
-                  Rasmiylashtirilgan sana: {new Date(order.createdAt).toLocaleDateString('uz-UZ', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  Rasmiylashtirilgan sana: {isNaN(createdDate.getTime()) ? 'Bugun' : createdDate.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
 

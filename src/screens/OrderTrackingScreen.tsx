@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Order, OrderStatus, UserRole } from '../types';
 import { TrackingMap } from '../components/TrackingMap';
 import { StatusBadge } from '../components/StatusBadge';
-import { formatMoneyUz, formatDurationUz } from '../services/routingService';
+import { formatMoneyUz, formatDurationUz, getSafeTelegramHandle, getSafePhone } from '../services/routingService';
 import { 
   Phone, 
   MessageSquare, 
@@ -77,10 +77,10 @@ export const OrderTrackingScreen: React.FC<OrderTrackingScreenProps> = ({
     }
   };
 
-  const telegramHandle = (isCarrier
-    ? (order.ownerTelegram || order.ownerPhone.replace(/[^0-9]/g, ''))
-    : (order.driverTelegram || order.driverPhone.replace(/[^0-9]/g, ''))
-  ).replace(/^@/, '');
+  const telegramHandle = getSafeTelegramHandle(
+    isCarrier ? order.ownerTelegram : order.driverTelegram,
+    isCarrier ? order.ownerPhone : order.driverPhone
+  );
 
   return (
     <div className="space-y-3.5 pb-28 max-w-md md:max-w-2xl mx-auto px-3 xs:px-4 w-full">

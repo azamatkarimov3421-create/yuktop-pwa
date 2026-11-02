@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CargoItem, Vehicle } from '../types';
 import { storageService } from '../services/storageService';
-import { formatMoneyUz } from '../services/routingService';
+import { formatMoneyUz, getSafeTelegramHandle, getSafePhone } from '../services/routingService';
 import { 
   Search, 
   Truck, 
@@ -213,7 +213,7 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
                   </span>
                   <div className="flex items-center gap-1.5">
                     <a
-                      href={`https://t.me/${(cargo.ownerTelegram || cargo.ownerPhone.replace(/[^0-9]/g, '')).replace(/^@/, '')}?text=${encodeURIComponent(`Assalomu alaykum! YUKTOP ilovasida "${cargo.pickupLocation.city} ➔ ${cargo.deliveryLocation.city}" (${cargo.title}) yukingizni ko'rdim. Mashinam tayyor.`)}`}
+                      href={`https://t.me/${getSafeTelegramHandle(cargo.ownerTelegram, cargo.ownerPhone)}?text=${encodeURIComponent(`Assalomu alaykum! YUKTOP ilovasida "${cargo.pickupLocation?.city || ''} ➔ ${cargo.deliveryLocation?.city || ''}" (${cargo.title || ''}) yukingizni ko'rdim. Mashinam tayyor.`)}`}
                       target="_blank"
                       rel="noreferrer"
                       onClick={e => e.stopPropagation()}
@@ -223,7 +223,7 @@ export const CarrierMarketplaceScreen: React.FC<CarrierMarketplaceScreenProps> =
                       <Send className="w-3.5 h-3.5" />
                     </a>
                     <a
-                      href={`tel:${cargo.ownerPhone}`}
+                      href={`tel:${getSafePhone(cargo.ownerPhone)}`}
                       onClick={e => e.stopPropagation()}
                       className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold flex items-center gap-1 shadow-2xs"
                     >

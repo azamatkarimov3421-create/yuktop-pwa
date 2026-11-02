@@ -184,5 +184,29 @@ export function formatDurationUz(minutes: number): string {
  * Format money into Uzbek Sum (UZS)
  */
 export function formatMoneyUz(amount: number): string {
+  if (isNaN(amount) || amount == null) return "0 so'm";
   return new Intl.NumberFormat('uz-UZ').format(amount) + " so'm";
+}
+
+/**
+ * Safe Telegram handle generator preventing null/undefined crashes
+ */
+export function getSafeTelegramHandle(telegram?: string | null, phone?: string | null): string {
+  if (telegram && typeof telegram === 'string') {
+    const clean = telegram.trim().replace(/^@/, '');
+    if (clean) return clean;
+  }
+  if (phone && typeof phone === 'string') {
+    const digits = phone.replace(/[^0-9]/g, '');
+    if (digits) return digits;
+  }
+  return 'yuktop_support';
+}
+
+/**
+ * Safe phone string preventing null/undefined crashes
+ */
+export function getSafePhone(phone?: string | null): string {
+  if (!phone || typeof phone !== 'string') return '+998901234567';
+  return phone;
 }
